@@ -1,0 +1,5 @@
+.idea
+venv
+instance
+**__pycache__**
+/sandbox.py
