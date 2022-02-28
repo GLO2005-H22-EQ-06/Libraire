@@ -4,5 +4,6 @@ create table if not exists Clients (
     prenom varchar(20),
     email varchar(20),
     adresse varchar(50),
-    telephone char(11)
+    telephone char(11),
+    PRIMARY KEY (idClient)
 );
