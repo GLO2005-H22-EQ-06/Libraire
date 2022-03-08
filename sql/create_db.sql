@@ -9,14 +9,14 @@ create table if not exists Clients
     PRIMARY KEY (id_client)
 );
 
-CREATE TABLE Produits(
+CREATE TABLE IF NOT EXISTS Produits(
     id_produit char(36) not null, #le uuid de python retourne 36 caracteres donc j'ai mis à 36
     prix double,
     quantity integer,
     PRIMARY KEY (id_produit)
 );
 
-CREATE TABLE Promotions(
+CREATE TABLE IF NOT EXISTS Promotions(
     id_promotion char(36) not NULL,
     remise integer,
     date_debut datetime not null,
@@ -24,7 +24,7 @@ CREATE TABLE Promotions(
     PRIMARY KEY (id_promotion)
 );
 
-CREATE TABLE Appliquer(
+CREATE TABLE IF NOT EXISTS Appliquer(
     id_promotion char(36),
     id_produit char(36),
     prix_remise double,
@@ -55,6 +55,88 @@ CREATE TABLE Facturer(
     ON UPDATE CASCADE
     ON DELETE NO ACTION
 );
+DELIMITER //
+CREATE PROCEDURE validate_uuid(
+    IN in_uuid char(36)
+)
+    DETERMINISTIC
+    NO SQL
+BEGIN
+    IF NOT (SELECT in_uuid REGEXP
+                   '[[:alnum:]]{8,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{12,}') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ID provided is not valid UUID format';
+    END IF;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE validate_email(
+    IN in_email varchar(100)
+)
+    DETERMINISTIC
+    NO SQL
+BEGIN
+    IF NOT (SELECT in_email REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'E-mail address provided is not valild e-mail format';
+    END IF;
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER validate_client_id
+    BEFORE INSERT
+    ON Clients
+    FOR EACH ROW
+BEGIN
+    CALL validate_uuid(NEW.id_client);
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER validate_product_id
+    BEFORE INSERT
+    ON Produits
+    FOR EACH ROW
+BEGIN
+    CALL validate_uuid(NEW.id_produit);
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER validate_facture_id
+    BEFORE INSERT
+    ON Facturer
+    FOR EACH ROW
+BEGIN
+    CALL validate_uuid(NEW.id_facture);
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER validate_promotion_id
+    BEFORE INSERT
+    ON Promotions
+    FOR EACH ROW
+BEGIN
+    CALL validate_uuid(NEW.id_promotion);
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER validate_client_email
+    BEFORE INSERT
+    ON Clients
+    FOR EACH ROW
+BEGIN
+    CALL validate_email(New.email);
+END//
+DELIMITER ;
+
+
+
+
+
+
 
 DROP TABLE Clients;
 DROP TABLE Facturer
