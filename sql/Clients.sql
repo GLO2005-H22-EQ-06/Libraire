@@ -1,9 +1,10 @@
-create table if not exists Clients (
-    idClient char(36) not null ,
-    nom varchar(20) not null ,
-    prenom varchar(20),
-    email varchar(20),
-    adresse varchar(50),
-    telephone char(11),
-    PRIMARY KEY (idClient)
-);
+DELIMITER //
+u
+CREATE TRIGGER validate_client_id
+    BEFORE INSERT
+    ON Clients
+    FOR EACH ROW
+BEGIN
+    CALL validate_uuid(NEW.id_client);
+END//
+DELIMITER ;

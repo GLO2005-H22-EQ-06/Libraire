@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS Appliquer(
     ON DELETE CASCADE
 );
 
-CREATE TABLE Facturer(
+CREATE TABLE IF NOT EXISTS Facturer(
     id_client char(36),
     id_produit char(36),
     id_facture char(36) not null,
@@ -132,11 +132,21 @@ BEGIN
 END//
 DELIMITER ;
 
+DELIMITER //
+CREATE TRIGGER valider_insertion_tuple_promotion
+    BEFORE INSERT
+    ON promotions
+    FOR EACH ROW
+begin
+    IF NEW.date_debut > NEW.date_fin then
+        signal sqlstate '45000' set message_text = 'La date de debut ne peut pas etre superieur à la date de fin ';
+    end if ;
+    IF NEW.remise > 100 THEN
+        signal sqlstate '45000' set message_text = 'La remise ne peut pas exceder 100% ';
+    end if;
+end //
+DELIMITER ;
 
 
 
-
-
-
-DROP TABLE Clients;
-DROP TABLE Facturer
+show databases
