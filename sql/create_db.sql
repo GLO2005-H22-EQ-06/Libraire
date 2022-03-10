@@ -9,6 +9,20 @@ create table if not exists Clients
     PRIMARY KEY (id_client)
 );
 
+CREATE TABLE IF NOT EXISTS LIVRES
+(
+id_produit char(36) not null,
+ ISBN char(13) NOT NULL,
+ titre varchar(250) NOT NULL ,
+ auteur varchar(600) NOT NULL ,
+ langue varchar(5) NOT NULL ,
+ editeur varchar(100),
+ annee date,
+ nbrepages integer,
+ description varchar(2000),
+ primary key (id_produit)
+
+);
 CREATE TABLE IF NOT EXISTS Produits(
     id_produit char(36) not null, #le uuid de python retourne 36 caracteres donc j'ai mis à 36
     prix double,
@@ -146,7 +160,3 @@ begin
     end if;
 end //
 DELIMITER ;
-
-
-
-show databases
