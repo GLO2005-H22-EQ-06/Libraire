@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS Facturer(
     ON UPDATE CASCADE
     ON DELETE NO ACTION
 );
+
 DELIMITER //
 CREATE PROCEDURE validate_uuid(
     IN in_uuid char(36)
@@ -158,5 +159,8 @@ begin
     IF NEW.remise > 100 THEN
         signal sqlstate '45000' set message_text = 'La remise ne peut pas exceder 100% ';
     end if;
+    IF CURRENT_DATE > NEW.date_debut then
+        signal sqlstate '45000' set message_text = 'La date de debut ne peut pas pas être inférieure à la date courrante';
+    end if ;
 end //
 DELIMITER ;
