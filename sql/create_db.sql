@@ -21,8 +21,32 @@ id_produit char(36) not null,
  nbrepages integer,
  description varchar(2000),
  primary key (id_produit)
+);
+
+CREATE TABLE IF NOT EXISTS COMPTE
+(
+    identifiant char(36),
+    motDePasse varchar(50),
+primary key (identifiant)
+);
+
+create table if not exists ASSOCIER
+(
+    identifiant char(36),
+    id_client char(36),
+    foreign key (identifiant)
+references compte(identifiant)
+on delete cascade
+on update cascade,
+foreign key (id_client)
+references clients(id_client)
+on delete cascade
+on update cascade
 
 );
+
+
+
 CREATE TABLE IF NOT EXISTS Produits(
     id_produit char(36) not null, #le uuid de python retourne 36 caracteres donc j'ai mis à 36
     prix double,
