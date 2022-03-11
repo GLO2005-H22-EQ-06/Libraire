@@ -11,16 +11,17 @@ create table if not exists Clients
 
 CREATE TABLE IF NOT EXISTS LIVRES
 (
-id_produit char(36) not null,
- ISBN char(13) NOT NULL,
- titre varchar(250) NOT NULL ,
- auteur varchar(600) NOT NULL ,
- langue varchar(5) NOT NULL ,
- editeur varchar(100),
- annee date,
- nbrepages integer,
- description varchar(2000),
- primary key (id_produit)
+    id_produit char(36) not null,
+    ISBN char(13) NOT NULL,
+    titre varchar(250) NOT NULL ,
+    auteur varchar(600) NOT NULL ,
+    langue varchar(5) NOT NULL ,
+    editeur varchar(100),
+    annee date,
+    nbrepages integer,
+     description varchar(2000),
+    primary key (ISBN),
+    foreign key (id_produit) references Produits(id_produit)
 );
 
 CREATE TABLE IF NOT EXISTS COMPTE
@@ -30,22 +31,34 @@ CREATE TABLE IF NOT EXISTS COMPTE
 primary key (identifiant)
 );
 
+CREATE TABLE IF NOT EXISTS ORDINATEURS
+(
+    id_produit char(36) NOT NULL,
+    marque varchar(250) NOT NULL,
+    modele varchar(250) NOT NULL ,
+    taille_ecran integer,
+    processeur varchar(250) NOT NULL,
+    resolultion integer,
+    ram integer NOT NULL,
+    stockage integer NOT NULL,
+    autonomie integer,
+    primary key (id_produit)
+);
+
 create table if not exists ASSOCIER
 (
     identifiant char(36),
     id_client char(36),
     foreign key (identifiant)
-references compte(identifiant)
-on delete cascade
-on update cascade,
-foreign key (id_client)
-references clients(id_client)
-on delete cascade
-on update cascade
+    references compte(identifiant)
+    on delete cascade
+    on update cascade,
+    foreign key (id_client)
+    references clients(id_client)
+    on delete cascade
+    on update cascade
 
 );
-
-
 
 CREATE TABLE IF NOT EXISTS Produits(
     id_produit char(36) not null, #le uuid de python retourne 36 caracteres donc j'ai mis à 36
@@ -94,6 +107,22 @@ CREATE TABLE IF NOT EXISTS Facturer(
     ON DELETE NO ACTION
 );
 
+CREATE TABLE IF NOT EXISTS Evaluer
+(
+    id_client char(36),
+    id_produit char(36),
+    note integer NOT NULL ,
+    commentaire TEXT,
+    date datetime,
+    primary key (id_client, id_produit),
+    foreign key (id_produit) REFERENCES Produits(id_produit)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE ,
+    foreign key (id_client) REFERENCES Clients(id_client)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
 DELIMITER //
 CREATE PROCEDURE validate_uuid(
     IN in_uuid char(36)
@@ -129,6 +158,34 @@ CREATE TRIGGER validate_client_id
 BEGIN
     CALL validate_uuid(NEW.id_client);
 END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER valider_note_evaluer
+    BEFORE INSERT
+    ON Evaluer
+    FOR EACH ROW
+BEGIN
+    IF NEW.note < 0 or NEW.note > 5
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'rate between 0 and 5';
+    END IF;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER check_evaluation_per_user
+    BEFORE INSERT
+    ON Evaluer
+    FOR EACH ROW
+BEGIN
+    IF (SELECT COUNT(*)
+        FROM Evaluer
+        WHERE id_client = NEW.id_client) > 1
+    THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Product already evaluated';
+    END IF;
+END //
 DELIMITER ;
 
 DELIMITER //
@@ -188,3 +245,5 @@ begin
     end if ;
 end //
 DELIMITER ;
+
+
