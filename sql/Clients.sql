@@ -11,5 +11,5 @@ DELIMITER ;
 
 drop table livres;
 
-alter table livres
-se
+alter table livres;
+drop TABLE clients
