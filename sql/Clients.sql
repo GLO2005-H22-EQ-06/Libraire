@@ -1,5 +1,4 @@
 DELIMITER //
-u
 CREATE TRIGGER validate_client_id
     BEFORE INSERT
     ON Clients

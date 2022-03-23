@@ -8,7 +8,7 @@ names = ["bookID", 'title', "authors", "average_rating", "isbn", "isbn13", "lang
          "ratings_count", "text_reviews_count", "publication_date", "publisher"]
 df = pd.read_csv("books.csv", delimiter=',', names=names)
 host = "root"
-pwd = "13Loulou#"
+pwd = "root"
 conn = sql.Connection(user=host, password=pwd, host="localhost", database="glo_2005_labs")
 conn.begin()
 cursor = conn.cursor()

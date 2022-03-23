@@ -1,3 +1,9 @@
+show databases;
+use glo_2005_labs;
+show tables;
+
+select * from livres;
+
 create table if not exists Clients
 (
     id_client  char(36)    not null,
@@ -28,7 +34,7 @@ CREATE TABLE IF NOT EXISTS COMPTE
 (
     identifiant char(36),
     motDePasse varchar(50),
-primary key (identifiant)
+    primary key (identifiant)
 );
 
 CREATE TABLE IF NOT EXISTS ORDINATEURS
