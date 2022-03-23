@@ -7,10 +7,10 @@ select * from livres;
 create table if not exists Clients
 (
     id_client  char(36)    not null,
-    nom       varchar(20) not null,
-    prenom    varchar(20),
-    email     varchar(20),
-    adresse   varchar(50),
+    nom       varchar(50) not null,
+    prenom    varchar(50),
+    email     varchar(50) unique,
+    adresse   varchar(200),
     telephone char(11),
     PRIMARY KEY (id_client)
 );

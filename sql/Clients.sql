@@ -7,3 +7,8 @@ BEGIN
     CALL validate_uuid(NEW.id_client);
 END//
 DELIMITER ;
+
+drop table livres;
+
+alter table livres;
+drop TABLE clients

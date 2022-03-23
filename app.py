@@ -1,4 +1,3 @@
-from _mysql_connector import MySQL
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
