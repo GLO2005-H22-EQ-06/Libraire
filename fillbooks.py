@@ -37,4 +37,3 @@ for index, row in df.iterrows():
         n += 1
 # conn.commit()
 conn.close()
-print(n)
