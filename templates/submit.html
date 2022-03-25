@@ -8,12 +8,28 @@
 </head>
 <body>
 <p> Bienvenue sur la page d'inscription de notre Librairie</p>
-<p>Nom:&emsp;<input maxlength="50" id="clientName" type="text"></p>
-<p>Prenom :&emsp;<input maxlength="50" id="clientPrenom" type="text"></p>
-<p>Email :&emsp;<input maxlength="50" id="clientMail" type="email"></p>
-<p>Adresse :&emsp;<input maxlength="200" id="clientAdresse" type="text"></p>
-<p>Telephone :&emsp; <input maxlength="11" id="clientTelephone" type="text"></p>
-<p>Mot de passe : &emsp;<input maxlength="50" id="clientMdp" type="password"></p>
-<p>Verifiez votre mot de passe : &emsp; <input maxlength="50" id="clientMdpCheck" type="password"></p>
+
+<form method="post" class="myForm">
+    <label for="clientNom">Name :</label>
+    <input maxlength="50" id="clientNom" name="clientNom" type="text" required><br>
+    <label for="clientPrenom">Prenom :</label>
+    <input maxlength="50" name="clientPrenom" id="clientPrenom" type="text"><br>
+    <label for="clientMail">Email</label>
+    <input maxlength="50" id="clientMail" name = "clientMail" type="email" required><br>
+    <label for="clientAdresse">Adresse</label>
+    <input maxlength="200" id="clientAdresse" type="text" required><br>
+    <label for="clientTelephone">Telephone</label>
+    <input maxlength="11" id="clientTelephone" name= "clientTelephone" type="text"><br>
+    <label for="clientMdp">Mot de passe</label>
+    <input maxlength="50" id="clientMdp" name="clientMdp" type="password"><br>
+    <label for="clientMdpCheck">Verifiez votre mot de passe :</label>
+    <input maxlength="50" id="clientMdpCheck" type="password"><br>
+    <input type="submit" value="Soumettre" onclick="submit_check()">
+    <input type="reset" value="recommencer">
+
+   
+</form>
+
+
 </body>
 </html>
