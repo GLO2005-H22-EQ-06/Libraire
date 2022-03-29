@@ -1,4 +1,4 @@
-DELIMITER //
+/**DELIMITER //
 CREATE TRIGGER validate_client_id
     BEFORE INSERT
     ON Clients
@@ -10,5 +10,5 @@ DELIMITER ;
 
 drop table livres;
 
-alter table livres;
-drop TABLE clients
+alter table livres
+drop TABLE clients*/

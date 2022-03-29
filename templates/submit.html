@@ -1,35 +1,61 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Librairie</title>
-    <link rel="stylesheet" type="text/css" href="../static/submit.css">
-    <script type="text/javascript" src="../static/submit.js"></script>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='submit.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 </head>
 <body>
-<p> Bienvenue sur la page d'inscription de notre Librairie</p>
+<div class="register">
+    <h1>Register</h1>
+    <form action="{{ url_for('register') }}" method="post">
+        <label for=name">
+            <p5>Nom : </p5>
+        </label>
+        <input type="text" name="name"  required>
 
-<form method="post" class="myForm">
-    <label for="clientNom">Name :</label>
-    <input maxlength="50" id="clientNom" name="clientNom" type="text" required><br>
-    <label for="clientPrenom">Prenom :</label>
-    <input maxlength="50" name="clientPrenom" id="clientPrenom" type="text"><br>
-    <label for="clientMail">Email</label>
-    <input maxlength="50" id="clientMail" name = "clientMail" type="email" required><br>
-    <label for="clientAdresse">Adresse</label>
-    <input maxlength="200" id="clientAdresse" type="text" required><br>
-    <label for="clientTelephone">Telephone</label>
-    <input maxlength="11" id="clientTelephone" name= "clientTelephone" type="text"><br>
-    <label for="clientMdp">Mot de passe</label>
-    <input maxlength="50" id="clientMdp" name="clientMdp" type="password"><br>
-    <label for="clientMdpCheck">Verifiez votre mot de passe :</label>
-    <input maxlength="50" id="clientMdpCheck" type="password"><br>
-    <input type="submit" value="Soumettre" onclick="submit_check()">
-    <input type="reset" value="recommencer">
+        <label for="second_name">
+            <p5>Prenom : </p5>
+        </label>
+        <input type="text" name="second_name"  required>
 
-   
-</form>
+        <label for=username">
+            <p5>Identifiant : </p5>
+        </label>
+        <input type="text" name="username"  required>
 
+        <label for="email">
+            <p5>Email : </p5>
+        </label>
+        <input type="text" name="email"  required>
 
+        <label for="address">
+            <p5>Adresse : </p5>
+        </label>
+        <input type="text" name="address" required>
+
+        <label for="phone">
+            <p5>Tel : </p5>
+        </label>
+        <input type="text" name="phone" required>
+
+        <label for="password">
+            <p5>Mot de passe : </p5>
+        </label>
+        <input type="password" name="password"  required>
+
+        <label for="confirm_password">
+            <p5>Confirmer mot de passe : </p5>
+        </label>
+        <input type="password" name="confirm_password" required>
+
+        <div class="msg">{{ msg }}</div>
+        <input type="submit" value="Register">
+        <div class="links">
+            <a href="{{ url_for('login') }}" class="passive">Login to your account</a>
+        </div>
+    </form>
+</div>
 </body>
 </html>

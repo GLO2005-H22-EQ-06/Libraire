@@ -1,18 +1,14 @@
-show databases;
 use glo_2005_labs;
-show tables;
 
-select * from livres;
-
-create table if not exists Clients
+create table if not exists CLIENTS
 (
-    id_client  char(36)    not null,
+    id_client  varchar(50)    not null,
     nom       varchar(50) not null,
     prenom    varchar(50),
     email     varchar(50) unique,
     adresse   varchar(200),
     telephone char(11),
-    PRIMARY KEY (id_client)
+    primary key (id_client)
 );
 
 CREATE TABLE IF NOT EXISTS LIVRES
@@ -32,7 +28,7 @@ CREATE TABLE IF NOT EXISTS LIVRES
 
 CREATE TABLE IF NOT EXISTS COMPTE
 (
-    identifiant char(36),
+    identifiant varchar(20),
     motDePasse varchar(50),
     primary key (identifiant)
 );
@@ -53,7 +49,7 @@ CREATE TABLE IF NOT EXISTS ORDINATEURS
 
 create table if not exists ASSOCIER
 (
-    identifiant char(36),
+    identifiant char(50),
     id_client char(36),
     foreign key (identifiant)
     references compte(identifiant)
@@ -66,14 +62,14 @@ create table if not exists ASSOCIER
 
 );
 
-CREATE TABLE IF NOT EXISTS Produits(
-    id_produit char(36) not null, #le uuid de python retourne 36 caracteres donc j'ai mis à 36
+CREATE TABLE IF NOT EXISTS PRODUITS(
+    id_produit char(36) not null,
     prix double,
     quantity integer,
     PRIMARY KEY (id_produit)
 );
 
-CREATE TABLE IF NOT EXISTS Promotions(
+CREATE TABLE IF NOT EXISTS PROMOTIONS(
     id_promotion char(36) not NULL,
     remise integer,
     date_debut datetime not null,
@@ -81,7 +77,7 @@ CREATE TABLE IF NOT EXISTS Promotions(
     PRIMARY KEY (id_promotion)
 );
 
-CREATE TABLE IF NOT EXISTS Appliquer(
+CREATE TABLE IF NOT EXISTS APPLIQUER(
     id_promotion char(36),
     id_produit char(36),
     prix_remise double,
@@ -96,7 +92,7 @@ CREATE TABLE IF NOT EXISTS Appliquer(
     ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Facturer(
+CREATE TABLE IF NOT EXISTS FACTURER(
     id_client char(36),
     id_produit char(36),
     id_facture char(36) not null,
@@ -113,7 +109,7 @@ CREATE TABLE IF NOT EXISTS Facturer(
     ON DELETE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS Evaluer
+CREATE TABLE IF NOT EXISTS EVALUER
 (
     id_client char(36),
     id_produit char(36),
@@ -251,5 +247,3 @@ begin
     end if ;
 end //
 DELIMITER ;
-
-

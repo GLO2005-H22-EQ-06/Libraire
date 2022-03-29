@@ -9,7 +9,7 @@ names = ["bookID", 'title', "authors", "average_rating", "isbn", "isbn13", "lang
 df = pd.read_csv("books.csv", delimiter=',', names=names)
 host = "root"
 pwd = "root"
-conn = sql.Connection(user=host, password=pwd, host="localhost", database="glo_2005_labs")
+conn = sql.Connection(user="root", password="EnvyUS123", host="localhost", database="glo_2005_labs")
 conn.begin()
 cursor = conn.cursor()
 cursor.execute("SELECT  * FROM livres")

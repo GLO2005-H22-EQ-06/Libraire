@@ -1,9 +1,8 @@
-import pymysql as sql
+import pymysql
 
-host = "root"
-pwd = "13Loulou#"
-conn = sql.Connection(user=host, password=pwd, host="localhost", database="glo_2005_labs")
-conn.begin()
+
+conn = pymysql.connect("localhost", "root", "EnvyUS123", "glo_2005_labs")
+
 cursor = conn.cursor()
 cursor.execute("SELECT  * FROM livres")
 for x in cursor:
