@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block body %}
+<div class="login">
+    <h1>Login to your account</h1>
+    <div class="links"></div>
+    <form name="LoginForm" onsubmit="return validateForm()" action="{{ url_for('login') }}" method="post">
+        <label for="username">
+      <i class="fas fa-user"></i>
+    </label>
+        <input type="text" name="username" placeholder="Username" id="username" required />
+        <label for="password">
+      <i class="fas fa-lock"></i>
+    </label>
+        <input type="password" name="password" placeholder="Password" id="password" required />
+        <div class="msg">{{ msg }}</div>
+        <input type="submit" value="Login" />
+        <div class="links">
+            <a href="{{ url_for('register') }}" class="passive">Create your account</a
+      >
+    </div>
+  </form>
+</div>
+{% endblock %}

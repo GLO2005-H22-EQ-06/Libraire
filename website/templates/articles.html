@@ -1,0 +1,50 @@
+{% extends 'base.html' %} {% block body %}
+<div class="container">
+    <div class="flex-between" style="margin-bottom: 16px">
+        <h2>Items available</h2>
+        <form class="d-flex" action="" method="GET">
+            <input class="form-control" type="search" placeholder="Search by name" name="search" value="" />
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center">
+        <div class="me-4">
+            <select type="select" class="form-control">
+        <option value="" selected>Filter by type</option>
+        <option value="history">History</option>
+        <option value="romance">Romance</option>
+        <option value="thriller">Thriller</option>
+      </select>
+        </div>
+        <div class="me-4">
+            <select type="select" class="form-control">
+        <option selected value="6">Results per page</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="0">All</option>
+      </select>
+        </div>
+    </div>
+    <div class="items-container">
+        {% for item in items %}
+        <div class="card item-card">
+            <div class="card-body">
+                <a href="">
+                    <h3>Harry Poter</h3>
+                </a>
+                <div>
+                    <span class="badge bg-primary text-light">Category</span>
+                </div>
+                <div>
+                    <span class="price-tag">{{ item.price }} $</span>
+                    <span class="quantity">Available: No</span>
+                </div>
+                <p>Amazing magic book (description)</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
