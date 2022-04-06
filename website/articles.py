@@ -6,4 +6,7 @@ articles = Blueprint('articles', __name__)
 
 @articles.route('/articles', methods=['GET', 'POST'])
 def render_articles():
-    return render_template("articles.html")
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM livres""")
+    all_products = cur.fetchall()
+    return render_template("articles.html", products=all_products)

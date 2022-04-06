@@ -27,20 +27,20 @@
         </div>
     </div>
     <div class="items-container">
-        {% for item in items %}
+        {% for book in books %}
         <div class="card item-card">
             <div class="card-body">
                 <a href="">
-                    <h3>Harry Poter</h3>
+                    <h3>{{book.titre}}</h3>
                 </a>
                 <div>
                     <span class="badge bg-primary text-light">Category</span>
                 </div>
                 <div>
-                    <span class="price-tag">{{ item.price }} $</span>
-                    <span class="quantity">Available: No</span>
+                    <span class="price-tag">{{ book.price }} $</span>
+                    <span class="quantity">Available: Yes</span>
                 </div>
-                <p>Amazing magic book (description)</p>
+                <p>{{book.description}}</p>
             </div>
         </div>
         {% endfor %}

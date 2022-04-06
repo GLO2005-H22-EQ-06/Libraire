@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_mysqldb import MySQL
 
 mysql = MySQL()
@@ -8,7 +7,9 @@ mysql = MySQL()
 def createApp():
     app = Flask(__name__)
     app.secret_key = "web app"
-    app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql://root:root@localhost/glo_2005_labs'
+    app.config["MYSQL_USER"] = "root"
+    app.config["MYSQL_PASSWORD"] = "root"
+    app.config["MYSQL_DB"] = "glo_2005_labs"
 
     mysql.__init__(app)
 

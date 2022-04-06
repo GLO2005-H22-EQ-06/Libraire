@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
+from flask_login import login_required, current_user
 from . import mysql
 
 panier = Blueprint('panier', __name__)
@@ -6,9 +7,12 @@ panier = Blueprint('panier', __name__)
 
 @panier.route('/panier', methods=['GET', 'POST'])
 def render_panier():
-    return render_template("panier.html")
+    if request.method == 'GET':
+        panier_user = ''
+        return render_template("panier.html", user=current_user, panier=panier_user)
 
 
 @panier.route('/checkout', methods=['GET', 'POST'])
 def render_checkout():
-    return render_template("checkout.html")
+    if request.method == 'POST':
+        return render_template("checkout.html")
