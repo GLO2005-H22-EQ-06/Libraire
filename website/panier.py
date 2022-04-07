@@ -8,7 +8,7 @@ panier = Blueprint('panier', __name__)
 def render_panier():
     if request.method == 'GET':
         panier_user = ''
-        return render_template("panier.html", user=current_user, panier=panier_user)
+        return render_template("panier.html", panier=panier_user)
 
 
 @panier.route('/checkout', methods=['GET', 'POST'])
