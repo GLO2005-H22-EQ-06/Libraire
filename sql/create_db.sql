@@ -9,7 +9,6 @@ create table if not exists CLIENTS (
   primary key (id_client)
 );
 CREATE TABLE IF NOT EXISTS LIVRES (
-  id_produit char(36) not null,
   ISBN char(13) NOT NULL,
   titre varchar(250) NOT NULL,
   auteur varchar(600) NOT NULL,
@@ -19,7 +18,6 @@ CREATE TABLE IF NOT EXISTS LIVRES (
   nbrepages integer,
   description varchar(2000),
   primary key (ISBN),
-  foreign key (id_produit) references Produits(id_produit)
 );
 CREATE TABLE IF NOT EXISTS COMPTE (
   identifiant varchar(20),
@@ -73,10 +71,8 @@ CREATE TABLE IF NOT EXISTS FACTURER(
   quantite integer,
   prix_total DOUBLE,
   PRIMARY KEY (id_facture),
-  FOREIGN KEY (id_produit) REFERENCES Produits(id_produit) ON DELETE
-  SET
-    NULL ON UPDATE CASCADE,
-    FOREIGN KEY (id_client) REFERENCES Clients(id_client) ON UPDATE CASCADE ON DELETE NO ACTION
+  FOREIGN KEY (id_produit) REFERENCES Produits(id_produit) ON DELETE NO ACTION ON UPDATE CASCADE,
+  FOREIGN KEY (id_client) REFERENCES Clients(id_client) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 CREATE TABLE IF NOT EXISTS EVALUER (
   id_client char(36),
@@ -87,6 +83,13 @@ CREATE TABLE IF NOT EXISTS EVALUER (
   primary key (id_client, id_produit),
   foreign key (id_produit) REFERENCES Produits(id_produit) ON DELETE CASCADE ON UPDATE CASCADE,
   foreign key (id_client) REFERENCES Clients(id_client) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE PANIER (
+  id_client char(36),
+  id_produit char(36),
+  qantity INTEGER DEFAULT 0,
+  PRIMARY KEY (id_client, id_produit),
+  FOREIGN KEY (id_client) REFERENCES Clients(id_client)
 );
 CREATE TABLE IF NOT EXISTS DELIMITER / / CREATE PROCEDURE validate_uuid(IN in_uuid char(36)) DETERMINISTIC NO SQL BEGIN IF NOT (
   SELECT
