@@ -1,14 +1,9 @@
-/**DELIMITER //
-CREATE TRIGGER validate_client_id
-    BEFORE INSERT
-    ON Clients
-    FOR EACH ROW
-BEGIN
-    CALL validate_uuid(NEW.id_client);
-END//
-DELIMITER ;
-
 drop table livres;
+drop table clients;
+drop table promotions;
+drop table produits;
 
-alter table livres
-drop TABLE clients*/
+
+
+select count(*) from panier where id_produit = '5f1cbc91-af0d-11ec-acf3-645d863fa25e' and id_client ='ab2d0fc0-7224-11ec-8ef2-b658b885fb3e';
+delete from produits where quantity > -400;

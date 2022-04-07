@@ -9,13 +9,14 @@ names = ["bookID", 'title', "authors", "average_rating", "isbn", "isbn13", "lang
 df = pd.read_csv("books.csv", delimiter=',', names=names)
 host = "root"
 pwd = "root"
-conn = sql.Connection(user="root", password="EnvyUS123", host="localhost", database="glo_2005_labs")
+conn = sql.Connection(user="root", password="13Loulou#", host="localhost", database="glo_2005_labs")
 conn.begin()
 cursor = conn.cursor()
 cursor.execute("SELECT  * FROM livres")
 for x in cursor:
     print(x)
 if not conn.open:
+    print("hi")
     exit(0)
 # command = f"""INSERT INTO LIVRES( ISBN, titre, auteur, langue, editeur, annee, nbrepages, description) values ({str(uuid.uuid4()), })"""
 # cursor.execute()
