@@ -8,7 +8,7 @@ def createApp():
     app = Flask(__name__)
     app.secret_key = "web app"
     app.config["MYSQL_USER"] = "root"
-    app.config["MYSQL_PASSWORD"] = "root"
+    app.config["MYSQL_PASSWORD"] = "EnvyUS123"
     app.config["MYSQL_DB"] = "glo_2005_labs"
 
     mysql.__init__(app)

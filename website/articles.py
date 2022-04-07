@@ -9,4 +9,4 @@ def render_articles():
     cur = mysql.connection.cursor()
     cur.execute("""SELECT * FROM livres""")
     all_products = cur.fetchall()
-    return render_template("articles.html", products=all_products)
+    return render_template("articles.html", books=all_products)

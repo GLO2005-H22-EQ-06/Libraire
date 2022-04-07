@@ -8,8 +8,8 @@ from website import mysql
 auth = Blueprint('auth', __name__)
 
 
-@auth.route('/login',  methods=['GET', 'POST'])
-def signIn():
+@auth.route('/login',  methods=['GET', 'POST'], endpoint='login')
+def login():
     msg = ''
     if request.method == 'POST':
         username = request.form['username']
@@ -31,7 +31,7 @@ def signIn():
     return render_template("login.html", msg=msg)
 
 
-@auth.route('/register',  methods=['GET', 'POST'])
+@auth.route('/register',  methods=['GET', 'POST'], endpoint='register')
 def register():
     msg = ''
     if request.method == 'POST':

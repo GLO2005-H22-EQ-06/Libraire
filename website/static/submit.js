@@ -8,12 +8,8 @@ function submit_check() {
     var email = document.getElementById("clientMail").value
 }
 
-function validateForm(nom) {
-    let x = document.forms["LoginForm"]["username"].value;
-    if (x == "zbi") {
-        alert("CENSOORED");
-        return false;
-    }
+function validateForm() {
+
 }
 
 

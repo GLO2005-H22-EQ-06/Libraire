@@ -1,26 +1,29 @@
-{% extends 'base.html' %} {% block body %}
+{% extends 'base.html' %}
+{% block css%}<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='submit.css') }}">{%  endblock %}
+{% block body %}
+
 <div class="register">
     <h1>Register</h1>
-    <form action="{{ url_for('register') }}" method="post">
-        <label for=name ">
+    <form action="{{ url_for('auth.register') }}" method="post">
+        <label for=name">
             <p5>Nom : </p5>
         </label>
-        <input type="text " name="name "  required>
+        <input type="text" name="name"  required>
 
-        <label for="second_name ">
+        <label for="second_name">
             <p5>Prenom : </p5>
         </label>
-        <input type="text " name="second_name "  required>
+        <input type="text" name="second_name"  required>
 
         <label for=username">
-        <p5>Identifiant : </p5>
+            <p5>Identifiant : </p5>
         </label>
-        <input type="text" name="username" required>
+        <input type="text" name="username"  required>
 
         <label for="email">
             <p5>Email : </p5>
         </label>
-        <input type="text" name="email" required>
+        <input type="text" name="email"  required>
 
         <label for="address">
             <p5>Adresse : </p5>
@@ -35,7 +38,7 @@
         <label for="password">
             <p5>Mot de passe : </p5>
         </label>
-        <input type="password" name="password" required>
+        <input type="password" name="password"  required>
 
         <label for="confirm_password">
             <p5>Confirmer mot de passe : </p5>
@@ -45,7 +48,7 @@
         <div class="msg">{{ msg }}</div>
         <input type="submit" value="Register">
         <div class="links">
-            <a href="{{ url_for('login') }}" class="passive">Login to your account</a>
+            <a href="{{ url_for('auth.login') }}" class="passive">Login to your account</a>
         </div>
     </form>
 </div>
