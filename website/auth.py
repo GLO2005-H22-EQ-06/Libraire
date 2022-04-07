@@ -8,7 +8,7 @@ from website import mysql
 auth = Blueprint('auth', __name__)
 
 
-@auth.route('/login',  methods=['GET', 'POST'])
+@auth.route('/login',  methods=['GET', 'POST'], endpoint='login')
 def login():
     msg = ''
     if request.method == 'POST':
@@ -31,7 +31,7 @@ def login():
     return render_template("login.html", msg=msg)
 
 
-@auth.route('/register',  methods=['GET', 'POST'])
+@auth.route('/register',  methods=['GET', 'POST'], endpoint='register')
 def register():
     msg = ''
     if request.method == 'POST':
