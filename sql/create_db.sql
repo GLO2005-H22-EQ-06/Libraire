@@ -244,3 +244,51 @@ begin
     end if;
 end //
 DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER update_inventory
+    AFTER INSERT ON PANIER
+    FOR EACH ROW
+    BEGIN
+        IF (select quantity from produits where PRODUITS.id_produit = NEW.id_produit and ) > NEW.qantity
+        THEN signal sqlstate  '45000' set Message_TEXT = 'Quantity insuffisante';
+        End if;
+        UPDATE PRODUITS SET quantity = quantity - NEW.qantity WHERE id_produit = NEW.id_produit;
+    end //
+DELIMITER ;
+
+drop trigger update_inventory;
+drop trigger update_cart;
+
+DELIMITER //
+CREATE TRIGGER update_cart before insert on panier
+    for each row
+    begin
+        IF (select quantity from produits where PRODUITS.id_produit = NEW.id_produit) > NEW.qantity
+        THEN signal sqlstate  '45000' set Message_TEXT = 'Quantity insuffisante';
+        End if;
+        UPDATE PRODUITS SET quantity = quantity - NEW.qantity WHERE id_produit = NEW.id_produit;
+    end //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE update_panier_quantity(in in_id_client char(36), in_id_produit char(36), inQuantity int)
+begin
+    update panier set qantity = qantity + inQuantity where id_produit = in_id_produit and id_client = in_id_client;
+end //
+DELIMITER ;
+
+
+
+
+
+select * from clients;
+
+insert into produits value ('5f1dbc90-af0d-11ec-acf3-645d863fa25e', 10, 200);
+insert into clients values ('ab2d0fc0-7224-11ec-8ef2-b658b885fb3e', 'foo', 'barr', 'mail@gmail.com', 'adrees', 11111111111);
+insert into panier value ('ab2d0fc0-7224-11ec-8ef2-b658b885fb3e', '5f1dbc90-af0d-11ec-acf3-645d863fa25e', 250);
+
+select * from produits;
+select * from panier where id_client = 'ab2d0fc0-7224-11ec-8ef2-b658b885fb3e';
+
+drop table panier;
