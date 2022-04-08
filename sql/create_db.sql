@@ -1,4 +1,3 @@
-use glo_2005_labs;
 create table if not exists CLIENTS
 (
     id_client varchar(50) not null,
@@ -109,7 +108,7 @@ CREATE TABLE PANIER
 (
     id_client  char(36),
     id_produit char(36),
-    qantity    INTEGER DEFAULT 0,
+    quantity    INTEGER DEFAULT 0,
     PRIMARY KEY (id_client, id_produit),
     FOREIGN KEY (id_client) REFERENCES Clients (id_client)
 );
@@ -261,7 +260,7 @@ CREATE TRIGGER update_inventory
     AFTER INSERT ON PANIER
     FOR EACH ROW
     BEGIN
-        IF (select quantity from produits where PRODUITS.id_produit = NEW.id_produit) > NEW.quantity;
+        IF (select quantity from produits where PRODUITS.id_produit = NEW.id_produit) > NEW.quantity
         THEN signal sqlstate  '45000' set Message_TEXT = 'Quantity insuffisante';
         End if;
         #UPDATE PRODUITS SET quantity = quantity - NEW.quantity WHERE id_produit = NEW.id_produit;
@@ -285,10 +284,10 @@ CREATE TRIGGER verify_cart_before_insertion before insert on panier
         then
             call update_panier_quantity(NEW.id_client, NEW.id_produit, NEW.quantity);
 
-        elseif (old_product_quantity < NEW.qantity) then
+        elseif (old_product_quantity < NEW.quantity) then
                 signal sqlstate  '45000' set Message_TEXT = 'Quantity insufficient in stock';
-        elseif (old_product_quantity > NEW.qantity) then
-            insert into panier values (NEW.id_client, NEW.id_produit, new.qantity);
+        elseif (old_product_quantity > NEW.quantity) then
+            insert into panier values (NEW.id_client, NEW.id_produit, new.quantity);
         end if;
     end //
 DELIMITER ;

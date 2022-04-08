@@ -26,28 +26,61 @@
       </select>
         </div>
     </div>
-    <div class="items-container">
-        {% for book in books %}
-        <div class="card item-card">
-            <div class="card-body">
-                <a href="">
-                    <h3>{{book.titre}}</h3>
-                </a>
-                <div>
-                    <span class="badge bg-primary text-light">Category</span>
-                </div>
-                <div>
-                    <span class="price-tag">{{ book.price }} $</span>
-                    <span class="quantity">Available: Yes</span>
-                </div>
-                <p>{{book.description}}</p>
-            </div>
-            <div>
-                <button>Add to cart</button>
-            </div>
+    <div class="container items" id="scroller">
+        <template id="items-template">
+      <div class="card">
+        <h5 class="card-header" id="title"></h5>
+        <div class="card-body">
+          <h5>
+            <span class="card-title" id="autor"></span>
+          </h5>
+          <div>
+            <span class="price-tag">30 $</span>
+          </div>
+          <p class="card-text" id="description"></p>
+          <a href="#" class="btn btn-primary">Add to cart</a>
         </div>
-        {% endfor %}
+      </div>
+    </template>
+    </div>
+    <div class="d-flex justify-content-center mb-3" id="sentinel">
+        <div class="spinner-border" role="status"></div>
     </div>
 </div>
+
+<script>
+    let scroller = document.getElementById("scroller");
+    let template = document.getElementById("items-template");
+    let sentinel = document.getElementById("sentinel");
+
+    let counter = 0;
+
+    function loadBooks() {
+        fetch(`/loads/books?c=${counter}`).then((response) => {
+            response.json().then((data) => {
+                if (!data.length) {
+                    sentinel.innerHTML = "No more articles";
+                }
+
+                for (var i = 0; i < data.length; i++) {
+                    let template_clone = template.content.cloneNode(true);
+                    template_clone.getElementById("title").innerHTML = data[i][2];
+                    template_clone.getElementById("autor").innerHTML = data[i][3];
+                    template_clone.getElementById("description").innerHTML = data[i][8];
+                    scroller.appendChild(template_clone);
+                    counter += 1;
+                }
+            });
+        });
+    }
+
+    var intersectionObserver = new IntersectionObserver((entries) => {
+        if (entries[0].intersectionRatio <= 0) {
+            return;
+        }
+        loadBooks();
+    });
+    intersectionObserver.observe(sentinel);
+</script>
 
 {% endblock %}
