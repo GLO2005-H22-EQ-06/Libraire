@@ -1,1 +1,31 @@
-{% extends 'base.html' %} {% block body %} {% endblock %}
+{% extends 'base.html' %} {% block body %}
+<h1>Shopping Cart</h1>
+
+<table class="table .table-striped" id="panier">
+    <thead id="head-laber">
+        <th class="product-image">Image</th>
+        <th class="product-details">Product</th>
+        <th class="product-price">Price</th>
+        <th class="product-quantity">Quantity</th>
+        <th class="product-removal">Remove</th>
+        <th class="product-line-price">Total</th>
+    </thead>
+
+    <tbody>
+        <tr>
+            <th><i class="fa-solid fa-book"></i></th>
+            <th>Hari poter</th>
+            <th>20 $</th>
+            <th>
+                <div class="product-quantity">
+                    <input type="number" value="2" min="1" />
+                </div>
+            </th>
+            <th><button class="remove-product">Remove</button></th>
+            <th>
+                <div class="product-line-price">25.98</div>
+            </th>
+        </tr>
+    </tbody>
+    {% endblock %}
+</table>
