@@ -1,11 +1,11 @@
 import pandas as pd
 import pymysql as sql
 
-df = pd.read_csv('./sql/auteurs.csv', delimiter=',')
+df = pd.read_csv('../csv/auteurs.csv', delimiter=',')
 dictio = {}
 i = 0
 host = "root"
-pwd = "root"
+pwd = "13Loulou#"
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
 conn.begin()
