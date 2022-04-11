@@ -19,7 +19,8 @@ def loadsBooks():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM livres")
     all_products = cur.fetchall()
-    max = len(all_products)
+    maxi = len(all_products)
+    print(maxi)
     if request.args:
         counter = int(request.args.get('c'))
 
@@ -27,7 +28,7 @@ def loadsBooks():
             print('fetching data for first time')
             res = make_response(jsonify(all_products[0: limit]), 200)
 
-        elif counter == max:
+        elif counter == maxi:
             res = make_response(jsonify({}), 200)
 
         else:
