@@ -11,7 +11,8 @@ create table if not exists CLIENTS
     prenom    varchar(50),
     email     varchar(50) unique,
     adresse   varchar(200),
-    telephone char(11),
+    telephone char(11) unique ,
+    unique (nom, prenom),
     primary key (id_client)
 );
 
@@ -26,7 +27,7 @@ CREATE TABLE IF NOT EXISTS LIVRES
     description text,
     primary key (ISBN)
 );
-
+create fulltext index search_titre on livres(titre) ;
 CREATE TABLE IF NOT EXISTS EDITEURS
 (
     id_editeur int auto_increment,
@@ -39,7 +40,7 @@ CREATE TABLE IF NOT EXISTS PUBLIER
     ISBN       BIGINT,
     id_editeur integer not null,
     annee      date,
-    PRIMARY KEY (id_editeur, ISBN),
+    PRIMARY KEY (ISBN, id_editeur),
     foreign key (ISBN) references livres (ISBN) on delete cascade on update cascade,
     foreign key (id_editeur) references EDITEURS (id_editeur) on delete cascade on update cascade
 );
@@ -55,7 +56,7 @@ create table if not exists ECRIRE
 (
     ISBN      BIGINT,
     id_auteur integer not null,
-    PRIMARY KEY (ISBN, id_auteur),
+    unique (ISBN, id_auteur),
     FOREIGN KEY (ISBN) REFERENCES LIVRES (ISBN) on delete cascade on update cascade,
     foreign key (id_auteur) REFERENCES AUTEURS (ID_AUTEUR) ON delete cascade on update cascade
 );
@@ -71,13 +72,14 @@ create table if not exists ASSOCIER
 (
     identifiant char(50),
     id_client   char(36),
+    unique (identifiant, id_client),
     foreign key (identifiant) references compte (identifiant) on delete cascade on update cascade,
     foreign key (id_client) references clients (id_client) on delete cascade on update cascade
 );
 
 CREATE TABLE IF NOT EXISTS PROMOTIONS
 (
-    id_promotion char(36) not NULL,
+    id_promotion integer unique not NULL,
     remise       integer,
     date_debut   datetime not null,
     date_fin     datetime not null,
@@ -86,10 +88,10 @@ CREATE TABLE IF NOT EXISTS PROMOTIONS
 
 CREATE TABLE IF NOT EXISTS APPLIQUER
 (
-    id_promotion char(36),
+    id_promotion integer,
     ISBN         BIGINT,
     prix_remise  double,
-    PRIMARY KEY (id_promotion, ISBN),
+    unique (id_promotion, ISBN),
     FOREIGN KEY (id_promotion) REFERENCES Promotions (id_promotion) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (ISBN) REFERENCES LIVRES (ISBN) ON UPDATE CASCADE ON DELETE CASCADE
 );
