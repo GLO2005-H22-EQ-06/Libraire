@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS LIVRES
     langue      varchar(5)   NOT NULL,
     nbrepages   integer,
     note double default 0.0,
+    quantity integer,
     description text,
     primary key (ISBN)
 );
@@ -280,3 +281,74 @@ begin
     end if;
 end //
 DELIMITER ;
+
+delimiter //
+create procedure add_panier (id char(36), isbn bigint, quantite int)
+begin
+    declare nombre int;
+    declare quantity_in_stock int;
+    select count(*) into nombre from panier where id_client = id and ISBN = isbn ;
+    if nombre > 0 then
+        select quantity into quantity_in_stock from panier where id_client = id and ISBN = isbn ;
+        update panier
+            set quantity = quantity_in_stock + quantite where id_client = id and ISBN = isbn;
+    else
+        insert into panier values (id, isbn, quantite);
+    end if;
+end //
+delimiter ;
+
+delimiter //
+create trigger verify_quantite_on_insert
+    before insert on panier
+    for each row
+    begin
+        declare quantity_in_stock int;
+        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
+        if (quantity_in_stock < NEW.quantity) then
+            signal sqlstate '45000'
+            set
+                message_text = 'La quantité est insuffisante';
+        end if;
+    end //
+delimiter ;
+
+
+delimiter //
+create trigger update_stock_livres_on_insert
+    after insert on panier
+    for each row
+    begin
+        declare quantity_in_stock int;
+        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
+        update livres
+            set quantity = quantity_in_stock - NEW.quantity where ISBN = NEW.ISBN;
+    end//
+delimiter ;
+
+delimiter //
+create trigger verify_quantite_on_update
+    before update on panier
+    for each row
+    begin
+        declare quantity_in_stock int;
+        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
+        if (quantity_in_stock < NEW.quantity) then
+            signal sqlstate '45000'
+            set
+                message_text = 'La quantité est insuffisante';
+        end if;
+    end //
+delimiter ;
+
+delimiter //
+create trigger update_stock_livres_on_update
+    after update on panier
+    for each row
+    begin
+        declare quantity_in_stock int;
+        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
+        update livres
+            set quantity = quantity_in_stock - NEW.quantity where ISBN = NEW.ISBN;
+    end //
+delimiter ;
