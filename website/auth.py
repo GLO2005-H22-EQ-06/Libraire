@@ -16,7 +16,6 @@ def login():
         password = request.form['password']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('USE glo_2005_labs')
         cursor.execute(
             'SELECT * FROM compte WHERE identifiant = %s AND motDePasse = %s', (username, password))
         compte = cursor.fetchone()
@@ -45,7 +44,6 @@ def register():
         confirm_password = request.form['confirm_password']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('USE glo_2005_labs')
         cursor.execute(
             'SELECT * FROM clients Cl, compte Co WHERE Co.identifiant = %s OR Cl.email = %s ', (username, email))
         username_fetch = cursor.fetchone()

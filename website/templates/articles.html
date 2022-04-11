@@ -28,14 +28,14 @@
     </div>
     <div class="container items" id="scroller">
         <template id="items-template">
-      <div class="card">
+      <div class="card" style="margin: 5% 0">
         <h5 class="card-header" id="title"></h5>
         <div class="card-body">
           <h5>
             <span class="card-title" id="autor"></span>
           </h5>
           <div>
-            <span class="price-tag">30 $</span>
+            <span class="price-tag">30$</span>
           </div>
           <p class="card-text" id="description"></p>
           <a href="#" class="btn btn-primary">Add to cart</a>
@@ -64,7 +64,7 @@
 
                 for (var i = 0; i < data.length; i++) {
                     let template_clone = template.content.cloneNode(true);
-                    template_clone.getElementById("title").innerHTML = data[i][2];
+                    template_clone.getElementById("title").innerHTML = data[i][1];
                     template_clone.getElementById("autor").innerHTML = data[i][3];
                     template_clone.getElementById("description").innerHTML = data[i][8];
                     scroller.appendChild(template_clone);

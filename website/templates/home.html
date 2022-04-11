@@ -4,9 +4,22 @@
     <div class="container-fluid py-5">
         <h1 class="display-5 fw-bold">Welcome to Bookstore!</h1>
         <p class="col-md-8 fs-4">Find your next story!</p>
-        <a class="btn btn-primary btn-lg text-white" type="button">Log in</a>
-        <a class="btn btn-primary btn-lg text-white" type="button">Sign up</a>
-    </div>
+        {% if not username %}
+        <a class="btn btn-primary btn-lg text-white" type="button" href="/login">Log in</a
+    >
+    <h3
+      class="btn btn-primary btn-lg text-white"
+      type="button"
+      href="/register"
+    >
+      Sign up
+    </h3>
+    {% else%}
+    <a class="btn btn-primary btn-lg text-white" type="button" href="/articles"
+      >Start shopping</a
+    >
+    {% endif %}
+  </div>
 </div>
 {% endblock %}
 
