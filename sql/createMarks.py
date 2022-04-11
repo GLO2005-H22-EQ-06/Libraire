@@ -17,7 +17,7 @@ stockage = []"""
 # names = ["id", "price", "speed", "hd", "ram", "screen", "cd", "multi", "premium", "ads", "trend"]
 # df = pd.read_csv('./sql/books.csv', delimiter=',', names=names)
 host = "root"
-pwd = "13Loulou#"
+pwd = "root"
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="glo_2005_labs")
 conn.begin()

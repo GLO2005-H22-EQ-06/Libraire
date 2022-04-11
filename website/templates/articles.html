@@ -64,7 +64,7 @@
 
                 for (var i = 0; i < data.length; i++) {
                     let template_clone = template.content.cloneNode(true);
-                    template_clone.getElementById("title").innerHTML = data[i][2];
+                    template_clone.getElementById("title").innerHTML = data[i][1];
                     template_clone.getElementById("autor").innerHTML = data[i][3];
                     template_clone.getElementById("description").innerHTML = data[i][8];
                     scroller.appendChild(template_clone);
