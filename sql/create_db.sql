@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS LIVRES
     langue      varchar(5)   NOT NULL,
     nbrepages   integer,
     note double default 0.0,
-    description varchar(2000),
+    description text,
     primary key (ISBN)
 );
 
@@ -126,6 +126,26 @@ CREATE TABLE PANIER
     FOREIGN KEY (id_client) REFERENCES Clients (id_client) ON DELETE NO ACTION ON UPDATE CASCADE,
     FOREIGN KEY (ISBN) references LIVRES (ISBN) ON DELETE NO ACTION ON UPDATE CASCADE
 );
+delimiter //
+create procedure insert_tuple_ecrire(isbn bigint, nom_auteur varchar(250))
+    deterministic no sql
+begin
+    declare id integer;
+    select id_auteur into id from auteurs where nom = nom_auteur;
+    insert into ecrire (isbn, id_auteur) VALUES (ISBN, id);
+end //
+delimiter ;
+
+delimiter //
+create procedure insert_tuple_publier(isbn bigint, nom_editeur varchar(100), publisher_date date)
+    deterministic no sql
+begin
+    declare id integer;
+    select id_editeur into id from editeurs where nom = nom_editeur;
+    insert into PUBLIER (isbn, id_editeur, annee) VALUES (ISBN, id, publisher_date);
+end //
+delimiter ;
+
 
 DELIMITER //
 CREATE PROCEDURE validate_uuid(IN in_uuid char(36))
