@@ -7,10 +7,18 @@
         {% if not username %}
         <a class="btn btn-primary btn-lg text-white" type="button" href="/login">Log in</a
     >
-    <a class="btn btn-primary btn-lg text-white" type="button" href="/register"
-      >Sign up</a
+    <h3
+      class="btn btn-primary btn-lg text-white"
+      type="button"
+      href="/register"
     >
-    {% else%} {% endif %}
+      Sign up
+    </h3>
+    {% else%}
+    <a class="btn btn-primary btn-lg text-white" type="button" href="/articles"
+      >Start shopping</a
+    >
+    {% endif %}
   </div>
 </div>
 {% endblock %}
