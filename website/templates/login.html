@@ -1,26 +1,24 @@
-
-{% extends 'base.html' %}
-{% block css%}<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='login.css') }}">{%  endblock %}
-{% block body %}
+{% extends 'base.html' %} {% block css%}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login.css') }}" />{% endblock %} {% block body %}
 
 <div class="login">
     <h1>Login to your account</h1>
-    <div class="links">
-    </div>
-    <form name="LoginForm" onsubmit="return validateForm()" action="{{ url_for('auth.login') }}" method="post">
+    <div class="links"></div>
+    <form name="LoginForm" onsubmit="validateForm()" action="{{ url_for('auth.login') }}" method="post">
         <label for="username">
-            <i class="fas fa-user"></i>
-        </label>
-        <input type="text" name="username" placeholder="Username" id="username" required>
+      <i class="fas fa-user"></i>
+    </label>
+        <input type="text" name="username" placeholder="Username" id="username" required />
         <label for="password">
-            <i class="fas fa-lock"></i>
-        </label>
-        <input type="password" name="password" placeholder="Password" id="password" required>
+      <i class="fas fa-lock"></i>
+    </label>
+        <input type="password" name="password" placeholder="Password" id="password" required />
         <div class="msg">{{ msg }}</div>
-        <input type="submit" value="Login">
+        <input type="submit" value="Login" />
         <div class="links">
-            <a href="{{ url_for('auth.register') }}" class="passive">Create your account</a>
-        </div>
-    </form>
+            <a href="{{ url_for('auth.register') }}" class="passive">Create your account</a
+      >
+    </div>
+  </form>
 </div>
 {% endblock %}

@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, Response
-from numpy import product
+from flask import Blueprint, render_template, request, Response, session
 from . import mysql
 
 panier = Blueprint('panier', __name__)
@@ -7,9 +6,9 @@ panier = Blueprint('panier', __name__)
 
 @panier.route('/panier', methods=['GET', 'POST'])
 def render_panier():
-    if request.method == 'GET':
-        panier_user = ''
-        return render_template("panier.html", panier=panier_user)
+    """if request.method == 'GET':
+        panier_user = ''"""
+    return render_template("panier.html")
 
 
 @panier.route('/checkout', methods=['GET', 'POST'])
