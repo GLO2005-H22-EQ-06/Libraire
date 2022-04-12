@@ -16,7 +16,8 @@ conn.begin()
 cursor = conn.cursor()
 
 print(lorem.paragraph())
-# exit(0)
+
+#exit(0)
 # command = f"""INSERT INTO LIVRES( ISBN, titre, auteur, langue, editeur, annee, nbrepages, description) values ({str(uuid.uuid4()), })"""
 # cursor.execute()
 n = 0
