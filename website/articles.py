@@ -10,7 +10,6 @@ limit = 20
 
 @articles.route('/articles', methods=['GET', 'POST'])
 def render_articles():
-
     return render_template("articles.html")
 
 
