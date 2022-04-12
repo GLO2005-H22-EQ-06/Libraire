@@ -11,21 +11,32 @@ create table if not exists CLIENTS (
   unique (nom, prenom),
   primary key (id_client)
 );
-CREATE TABLE IF NOT EXISTS LIVRES (
-  ISBN BIGINT,
-  titre varchar(250) NOT NULL,
-  langue varchar(5) NOT NULL,
-  nbrepages integer,
-  note double default 0.0,
-  quantity integer,
-  description text,
-  primary key (ISBN)
+create table LIVRES (
+  ISBN char(10) not null primary key,
+  titre varchar(250) not null,
+  auteur varchar(250) not null,
+  editeur varchar(100) not null,
+  langue varchar(5) not null,
+  nbrepages integer null,
+  description text null,
+  annee date,
+  note double default null null
 );
-create fulltext index search_titre on livres(titre);
-CREATE TABLE IF NOT EXISTS EDITEURS (
-  id_editeur int auto_increment,
-  nom varchar(100) unique,
-  primary key (id_editeur)
+create unique index LIVRES_ISBN_uindex on LIVRES (ISBN);
+create index search_auteur on LIVRES (auteur);
+create index search_editeur on LIVRES (editeur);
+create index search_titre on LIVRES (titre);
+CREATE TABLE STOCK (
+  ISBN char(10) unique,
+  quantity int,
+  prix double,
+  primary key (isbn)
+);
+/*CREATE TABLE IF NOT EXISTS EDITEURS
+(
+    id_editeur int auto_increment,
+    nom        varchar(100) unique,
+    primary key (id_editeur)
 );
 CREATE TABLE IF NOT EXISTS PUBLIER (
   ISBN BIGINT,
@@ -40,13 +51,15 @@ CREATE TABLE IF NOT EXISTS AUTEURS (
   nom varchar(250) not null,
   primary key (id_auteur)
 );
-create table if not exists ECRIRE (
-  ISBN BIGINT,
-  id_auteur integer not null,
-  unique (ISBN, id_auteur),
-  FOREIGN KEY (ISBN) REFERENCES LIVRES (ISBN) on delete cascade on update cascade,
-  foreign key (id_auteur) REFERENCES AUTEURS (ID_AUTEUR) ON delete cascade on update cascade
-);
+
+create table if not exists ECRIRE
+(
+    ISBN      BIGINT,
+    id_auteur integer not null,
+    unique (ISBN, id_auteur),
+    FOREIGN KEY (ISBN) REFERENCES LIVRES (ISBN) on delete cascade on update cascade,
+    foreign key (id_auteur) REFERENCES AUTEURS (ID_AUTEUR) ON delete cascade on update cascade
+);*/
 CREATE TABLE IF NOT EXISTS COMPTE (
   identifiant varchar(20),
   motDePasse varchar(50),
@@ -68,7 +81,7 @@ CREATE TABLE IF NOT EXISTS PROMOTIONS (
 );
 CREATE TABLE IF NOT EXISTS APPLIQUER (
   id_promotion integer,
-  ISBN BIGINT,
+  ISBN char(10),
   prix_remise double,
   unique (id_promotion, ISBN),
   FOREIGN KEY (id_promotion) REFERENCES Promotions (id_promotion) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -76,7 +89,7 @@ CREATE TABLE IF NOT EXISTS APPLIQUER (
 );
 CREATE TABLE IF NOT EXISTS FACTURER (
   id_client char(36),
-  ISBN BIGINT,
+  ISBN char(10),
   id_facture char(36) not null,
   date_achat datetime not null,
   quantite integer,
@@ -86,7 +99,7 @@ CREATE TABLE IF NOT EXISTS FACTURER (
 );
 CREATE TABLE IF NOT EXISTS EVALUER (
   id_client char(36),
-  ISBN BIGINT,
+  ISBN char(10),
   note integer NOT NULL,
   commentaire TEXT,
   date datetime,
@@ -96,115 +109,25 @@ CREATE TABLE IF NOT EXISTS EVALUER (
 );
 CREATE TABLE PANIER (
   id_client char(36),
-  ISBN BIGINT,
+  ISBN char(10),
   quantity INTEGER,
   PRIMARY KEY (id_client, ISBN),
   FOREIGN KEY (id_client) REFERENCES Clients (id_client) ON DELETE NO ACTION ON UPDATE CASCADE,
   FOREIGN KEY (ISBN) references LIVRES (ISBN) ON DELETE NO ACTION ON UPDATE CASCADE
 );
-delimiter / / create procedure insert_tuple_ecrire(isbn bigint, nom_auteur varchar(250))
-deterministic no sql begin declare id integer;
-select
-  id_auteur into id
-from
-  auteurs
-where
-  nom = nom_auteur;
-insert into
-  ecrire (isbn, id_auteur)
-VALUES
-  (ISBN, id);
-end / / delimiter;
-delimiter / / create procedure insert_tuple_publier(
-  isbn bigint,
-  nom_editeur varchar(100),
-  publisher_date date
-) deterministic no sql begin declare id integer;
-select
-  id_editeur into id
-from
-  editeurs
-where
-  nom = nom_editeur;
-insert into
-  PUBLIER (isbn, id_editeur, annee)
-VALUES
-  (ISBN, id, publisher_date);
-end / / delimiter;
-DELIMITER / / CREATE PROCEDURE validate_uuid(IN in_uuid char(36))
-DETERMINISTIC NO SQL BEGIN IF NOT (
-  SELECT
-    in_uuid REGEXP '[[:alnum:]]{8,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{12,}'
-) THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'ID provided is not valid UUID format';
-END IF;
-END / / DELIMITER ;
-DELIMITER / / CREATE PROCEDURE validate_email(IN in_email varchar(100)) DETERMINISTIC NO SQL BEGIN IF NOT (
-  SELECT
-    in_email REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$'
-) THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'E-mail address provided is not valild e-mail format';
-END IF;
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER validate_client_id BEFORE
-INSERT
-  ON Clients FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_client);
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER valider_note_evaluer BEFORE
-INSERT
-  ON Evaluer FOR EACH ROW BEGIN IF NEW.note < 0
-  or NEW.note > 5 THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'rate between 0 and 5';
-END IF;
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER check_evaluation_per_user BEFORE
+/*delimiter //
+create procedure insert_tuple_ecrire(isbn bigint, nom_auteur varchar(250))
+    deterministic no sql
+begin
+    declare id integer;
+    select id_auteur into id from auteurs where nom = nom_auteur;
+    insert into ecrire (isbn, id_auteur) VALUES (ISBN, id);
+end //
+delimiter ;
 
-INSERT
-  ON Evaluer FOR EACH ROW BEGIN IF (
-    SELECT
-      COUNT(*)
-    FROM
-      Evaluer
-    WHERE
-      id_client = NEW.id_client
-  ) > 1 THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'Product already evaluated';
-END IF;
-END / / DELIMITER ;
-DELIMITER / / CREATE TRIGGER validate_facture_id BEFORE
-INSERT
-  ON Facturer FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_facture);
-END / / DELIMITER ;
-DELIMITER / / CREATE TRIGGER validate_promotion_id BEFORE
-INSERT
-  ON Promotions FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_promotion);
-END / / DELIMITER ;
-DELIMITER / / CREATE TRIGGER validate_client_email BEFORE
-INSERT
-  ON Clients FOR EACH ROW BEGIN CALL validate_email(New.email);
-END / / DELIMITER ;
-DELIMITER / / CREATE TRIGGER valider_insertion_tuple_promotion BEFORE
-INSERT
-  ON promotions FOR EACH ROW begin IF NEW.date_debut > NEW.date_fin then signal sqlstate '45000'
-set
-  message_text = 'La date de debut ne peut pas etre superieur à la date de fin ';
-end if;
-IF NEW.remise > 100 THEN signal sqlstate '45000'
-set
-  message_text = 'La remise ne peut pas exceder 100% ';
-end if;
-IF CURRENT_DATE > NEW.date_debut then signal sqlstate '45000'
-set
-  message_text = 'La date de debut ne peut pas pas être inférieure à la date courrante';
-end if;
-end / / DELIMITER ;
-
-delimiter / /
-create procedure add_panier (IN id char(36), In isbn bigint, In quantite int)
+delimiter //
+create procedure insert_tuple_publier(isbn bigint, nom_editeur varchar(100), publisher_date date)
+    deterministic no sql
 begin
 declare nombre int;
 declare quantity_in_stock int;
@@ -299,10 +222,186 @@ set
 where
   ISBN = NEW.ISBN;
 end //
-delimiter ;
-
-call add_panier('dcfdf3e7-ba0f-11ec-83df-706655b22fd0', 8987059752, 1);
-call add_panier('dcfdf3e7-ba0f-11ec-83df-706655b22fd0', 645241001173, 1);
-select * from panier;
-
-delete from panier where quantity > 0;
+delimiter ;*/
+call add_panier(
+  'dcfdf3e7-ba0f-11ec-83df-706655b22fd0',
+  8987059752,
+  1
+);
+call add_panier(
+  'dcfdf3e7-ba0f-11ec-83df-706655b22fd0',
+  645241001173,
+  1
+);
+select
+  *
+from
+  panier;
+< < < < < < < HEAD
+delete from
+  panier
+where
+  quantity > 0;
+== == == = DELIMITER / / CREATE PROCEDURE validate_uuid(IN in_uuid char(36)) DETERMINISTIC NO SQL BEGIN IF NOT (
+    SELECT
+      in_uuid REGEXP '[[:alnum:]]{8,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{12,}'
+  ) THEN SIGNAL SQLSTATE '45000'
+SET
+  MESSAGE_TEXT = 'ID provided is not valid UUID format';
+END IF;
+END / / DELIMITER;
+DELIMITER / / CREATE PROCEDURE validate_email(IN in_email varchar(100)) DETERMINISTIC NO SQL BEGIN IF NOT (
+  SELECT
+    in_email REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$'
+) THEN SIGNAL SQLSTATE '45000'
+SET
+  MESSAGE_TEXT = 'E-mail address provided is not valild e-mail format';
+END IF;
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER validate_client_id BEFORE
+INSERT
+  ON Clients FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_client);
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER valider_note_evaluer BEFORE
+INSERT
+  ON Evaluer FOR EACH ROW BEGIN IF NEW.note < 0
+  or NEW.note > 5 THEN SIGNAL SQLSTATE '45000'
+SET
+  MESSAGE_TEXT = 'rate between 0 and 5';
+END IF;
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER check_evaluation_per_user BEFORE
+INSERT
+  ON Evaluer FOR EACH ROW BEGIN IF (
+    SELECT
+      COUNT(*)
+    FROM
+      Evaluer
+    WHERE
+      id_client = NEW.id_client
+  ) > 1 THEN SIGNAL SQLSTATE '45000'
+SET
+  MESSAGE_TEXT = 'Product already evaluated';
+END IF;
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER validate_facture_id BEFORE
+INSERT
+  ON Facturer FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_facture);
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER validate_promotion_id BEFORE
+INSERT
+  ON Promotions FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_promotion);
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER validate_client_email BEFORE
+INSERT
+  ON Clients FOR EACH ROW BEGIN CALL validate_email(New.email);
+END / / DELIMITER;
+DELIMITER / / CREATE TRIGGER valider_insertion_tuple_promotion BEFORE
+INSERT
+  ON promotions FOR EACH ROW begin IF NEW.date_debut > NEW.date_fin then signal sqlstate '45000'
+set
+  message_text = 'La date de debut ne peut pas etre superieur à la date de fin ';
+end if;
+IF NEW.remise > 100 THEN signal sqlstate '45000'
+set
+  message_text = 'La remise ne peut pas exceder 100% ';
+end if;
+IF CURRENT_DATE > NEW.date_debut then signal sqlstate '45000'
+set
+  message_text = 'La date de debut ne peut pas pas être inférieure à la date courrante';
+end if;
+end / / DELIMITER;
+delimiter / / create procedure add_panier(id char(36), isbn bigint, quantite int) begin declare nombre int;
+declare quantity_in_stock int;
+select
+  count(*) into nombre
+from
+  panier
+where
+  id_client = id
+  and ISBN = isbn;
+if nombre > 0 then
+select
+  quantity into quantity_in_stock
+from
+  panier
+where
+  id_client = id
+  and ISBN = isbn;
+update
+  panier
+set
+  quantity = quantity_in_stock + quantite
+where
+  id_client = id
+  and ISBN = isbn;
+  else
+insert into
+  panier
+values
+  (id, isbn, quantite);
+end if;
+end / / delimiter;
+delimiter / / create trigger verify_quantite_on_insert before
+insert
+  on panier for each row begin declare quantity_in_stock int;
+select
+  quantity into quantity_in_stock
+from
+  STOCK
+where
+  STOCK.ISBN = NEW.ISBN;
+if (quantity_in_stock < NEW.quantity) then signal sqlstate '45000'
+set
+  message_text = 'La quantité est insuffisante';
+end if;
+end / / delimiter;
+delimiter / / create trigger update_stock_livres_on_insert
+after
+insert
+  on panier for each row begin declare quantity_in_stock int;
+select
+  quantity into quantity_in_stock
+from
+  STOCK
+where
+  STOCK.ISBN = NEW.ISBN;
+update
+  STOCK
+set
+  quantity = quantity_in_stock - NEW.quantity
+where
+  ISBN = NEW.ISBN;
+end / / delimiter;
+delimiter / / create trigger verify_quantite_on_update before
+update
+  on panier for each row begin declare quantity_in_stock int;
+select
+  quantity into quantity_in_stock
+from
+  STOCK
+where
+  STOCK.ISBN = NEW.ISBN;
+if (quantity_in_stock < NEW.quantity) then signal sqlstate '45000'
+set
+  message_text = 'La quantité est insuffisante';
+end if;
+end / / delimiter;
+delimiter / / create trigger update_stock_livres_on_update
+after
+update
+  on panier for each row begin declare quantity_in_stock int;
+select
+  quantity into quantity_in_stock
+from
+  STOCK
+where
+  STOCK.ISBN = NEW.ISBN;
+update
+  STOCK
+set
+  quantity = quantity_in_stock - NEW.quantity
+where
+  ISBN = NEW.ISBN;
+end / / delimiter;
+> > > > > > > af93b59f37788b9f629347f37170e4167b3db256
