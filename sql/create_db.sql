@@ -335,6 +335,7 @@ begin
         update STOCK
         set quantity = quantity_in_stock - quantite
         where STOCK.ISBN = p_isbn;
+
     else
         insert into panier values (id, p_isbn, quantite);
     end if;
@@ -349,6 +350,11 @@ create trigger verify_quantite_on_insert
 begin
     declare quantity_in_stock int;
     select quantity into quantity_in_stock from STOCK where STOCK.ISBN = NEW.ISBN;
+    if (NEW.quantity <= 0) then
+        signal sqlstate '45000'
+            set
+                message_text = 'On ne peut pas inserer une quantité nulle ou negative';
+    end if ;
     if (quantity_in_stock < NEW.quantity) then
         signal sqlstate '45000'
             set
