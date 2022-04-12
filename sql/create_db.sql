@@ -223,188 +223,7 @@ where
   ISBN = NEW.ISBN;
 end //
 delimiter ;*/
-< < < < < < < HEAD call add_panier(
-  'dcfdf3e7-ba0f-11ec-83df-706655b22fd0',
-  8987059752,
-  1
-);
-call add_panier(
-  'dcfdf3e7-ba0f-11ec-83df-706655b22fd0',
-  645241001173,
-  1
-);
-select
-  *
-from
-  panier;
-< < < < < < < HEAD
-delete from
-  panier
-where
-  quantity > 0;
-== == == = DELIMITER / / CREATE PROCEDURE validate_uuid(IN in_uuid char(36)) DETERMINISTIC NO SQL BEGIN IF NOT (
-    SELECT
-      in_uuid REGEXP '[[:alnum:]]{8,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{12,}'
-  ) THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'ID provided is not valid UUID format';
-END IF;
-END / / DELIMITER;
-DELIMITER / / CREATE PROCEDURE validate_email(IN in_email varchar(100)) DETERMINISTIC NO SQL BEGIN IF NOT (
-  SELECT
-    in_email REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$'
-) THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'E-mail address provided is not valild e-mail format';
-END IF;
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER validate_client_id BEFORE
-INSERT
-  ON Clients FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_client);
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER valider_note_evaluer BEFORE
-INSERT
-  ON Evaluer FOR EACH ROW BEGIN IF NEW.note < 0
-  or NEW.note > 5 THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'rate between 0 and 5';
-END IF;
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER check_evaluation_per_user BEFORE
-INSERT
-  ON Evaluer FOR EACH ROW BEGIN IF (
-    SELECT
-      COUNT(*)
-    FROM
-      Evaluer
-    WHERE
-      id_client = NEW.id_client
-  ) > 1 THEN SIGNAL SQLSTATE '45000'
-SET
-  MESSAGE_TEXT = 'Product already evaluated';
-END IF;
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER validate_facture_id BEFORE
-INSERT
-  ON Facturer FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_facture);
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER validate_promotion_id BEFORE
-INSERT
-  ON Promotions FOR EACH ROW BEGIN CALL validate_uuid(NEW.id_promotion);
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER validate_client_email BEFORE
-INSERT
-  ON Clients FOR EACH ROW BEGIN CALL validate_email(New.email);
-END / / DELIMITER;
-DELIMITER / / CREATE TRIGGER valider_insertion_tuple_promotion BEFORE
-INSERT
-  ON promotions FOR EACH ROW begin IF NEW.date_debut > NEW.date_fin then signal sqlstate '45000'
-set
-  message_text = 'La date de debut ne peut pas etre superieur à la date de fin ';
-end if;
-IF NEW.remise > 100 THEN signal sqlstate '45000'
-set
-  message_text = 'La remise ne peut pas exceder 100% ';
-end if;
-IF CURRENT_DATE > NEW.date_debut then signal sqlstate '45000'
-set
-  message_text = 'La date de debut ne peut pas pas être inférieure à la date courrante';
-end if;
-end / / DELIMITER;
-delimiter / / create procedure add_panier(id char(36), isbn bigint, quantite int) begin declare nombre int;
-declare quantity_in_stock int;
-select
-  count(*) into nombre
-from
-  panier
-where
-  id_client = id
-  and ISBN = isbn;
-if nombre > 0 then
-select
-  quantity into quantity_in_stock
-from
-  panier
-where
-  id_client = id
-  and ISBN = isbn;
-update
-  panier
-set
-  quantity = quantity_in_stock + quantite
-where
-  id_client = id
-  and ISBN = isbn;
-  else
-insert into
-  panier
-values
-  (id, isbn, quantite);
-end if;
-end / / delimiter;
-delimiter / / create trigger verify_quantite_on_insert before
-insert
-  on panier for each row begin declare quantity_in_stock int;
-select
-  quantity into quantity_in_stock
-from
-  STOCK
-where
-  STOCK.ISBN = NEW.ISBN;
-if (quantity_in_stock < NEW.quantity) then signal sqlstate '45000'
-set
-  message_text = 'La quantité est insuffisante';
-end if;
-end / / delimiter;
-delimiter / / create trigger update_stock_livres_on_insert
-after
-insert
-  on panier for each row begin declare quantity_in_stock int;
-select
-  quantity into quantity_in_stock
-from
-  STOCK
-where
-  STOCK.ISBN = NEW.ISBN;
-update
-  STOCK
-set
-  quantity = quantity_in_stock - NEW.quantity
-where
-  ISBN = NEW.ISBN;
-end / / delimiter;
-delimiter / / create trigger verify_quantite_on_update before
-update
-  on panier for each row begin declare quantity_in_stock int;
-select
-  quantity into quantity_in_stock
-from
-  STOCK
-where
-  STOCK.ISBN = NEW.ISBN;
-if (quantity_in_stock < NEW.quantity) then signal sqlstate '45000'
-set
-  message_text = 'La quantité est insuffisante';
-end if;
-end / / delimiter;
-delimiter / / create trigger update_stock_livres_on_update
-after
-update
-  on panier for each row begin declare quantity_in_stock int;
-select
-  quantity into quantity_in_stock
-from
-  STOCK
-where
-  STOCK.ISBN = NEW.ISBN;
-update
-  STOCK
-set
-  quantity = quantity_in_stock - NEW.quantity
-where
-  ISBN = NEW.ISBN;
-end / / delimiter;
-> > > > > > > af93b59f37788b9f629347f37170e4167b3db256 == == == = DELIMITER / / CREATE PROCEDURE validate_uuid(IN in_uuid char(36)) DETERMINISTIC NO SQL BEGIN IF NOT (
+DELIMITER / / CREATE PROCEDURE validate_uuid(IN in_uuid char(36)) DETERMINISTIC NO SQL BEGIN IF NOT (
   SELECT
     in_uuid REGEXP '[[:alnum:]]{8,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{4,}-[[:alnum:]]{12,}'
 ) THEN SIGNAL SQLSTATE '45000'
@@ -533,6 +352,10 @@ from
   STOCK
 where
   STOCK.ISBN = NEW.ISBN;
+if (NEW.quantity <= 0) then signal sqlstate '45000'
+set
+  message_text = 'On ne peut pas inserer une quantité nulle ou negative';
+end if;
 if (quantity_in_stock < NEW.quantity) then signal sqlstate '45000'
 set
   message_text = 'La quantité est insuffisante en stock';
@@ -556,7 +379,9 @@ begin
     set quantity = quantity_in_stock - NEW.quantity
     where ISBN = NEW.ISBN;
 end//
-delimiter ;*/
+delimiter ;
+
+
 /*delimiter //
 create trigger verify_quantite_on_update
     before update
@@ -589,4 +414,3 @@ begin
     where ISBN = NEW.ISBN;
 end //
 delimiter ;*/
-> > > > > > > c29667508f62daf7678eed10a1afbdee732d070d

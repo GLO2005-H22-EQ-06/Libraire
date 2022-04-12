@@ -1,5 +1,4 @@
 from website import createApp
-import uuid
 
 app = createApp()
 

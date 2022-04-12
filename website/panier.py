@@ -21,14 +21,11 @@ def render_checkout():
 @panier.route('/addToCart', methods=['GET', 'POST'])
 def addProductToCart():
     if request.method == 'POST':
-        userId = str(request.headers.get('userId'))
-        isbn = request.headers['isbn']
-        quantity = int(request.headers['quantity'])
+        userId = str(request.args.get('userId'))
+        isbn = request.args['isbn']
+        quantity = int(request.args['quantity'])
 
         cur = mysql.connection.cursor()
-        # cur.execute('CALL add_panier(% s, % s, % s)',
-        #            (userId, isbn, quantity))
-
         cur.callproc('add_panier', (userId, isbn, quantity))
         mysql.connection.commit()
 
