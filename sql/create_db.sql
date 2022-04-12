@@ -11,24 +11,47 @@ create table if not exists CLIENTS
     prenom    varchar(50),
     email     varchar(50) unique,
     adresse   varchar(200),
-    telephone char(11) unique ,
+    telephone char(11) unique,
     unique (nom, prenom),
     primary key (id_client)
 );
 
-CREATE TABLE IF NOT EXISTS LIVRES
+create table LIVRES
 (
-    ISBN        BIGINT,
-    titre       varchar(250) NOT NULL,
-    langue      varchar(5)   NOT NULL,
-    nbrepages   integer,
-    note double default 0.0,
-    quantity integer,
-    description text,
-    primary key (ISBN)
+    ISBN        char(10)            not null
+        primary key,
+    titre       varchar(250)        not null,
+    auteur      varchar(250)        not null,
+    editeur     varchar(100)        not null,
+    langue      varchar(5)          not null,
+    nbrepages   integer             null,
+    description text                null,
+    annee       date,
+    note        double default null null
 );
-create fulltext index search_titre on livres(titre) ;
-CREATE TABLE IF NOT EXISTS EDITEURS
+
+create unique index LIVRES_ISBN_uindex
+    on LIVRES (ISBN);
+
+create index search_auteur
+    on LIVRES (auteur);
+
+create index search_editeur
+    on LIVRES (editeur);
+
+create index search_titre
+    on LIVRES (titre);
+
+
+
+CREATE TABLE STOCK
+(
+    ISBN     char(10) unique,
+    quantity int,
+    prix     double,
+    primary key (isbn)
+);
+/*CREATE TABLE IF NOT EXISTS EDITEURS
 (
     id_editeur int auto_increment,
     nom        varchar(100) unique,
@@ -59,7 +82,7 @@ create table if not exists ECRIRE
     unique (ISBN, id_auteur),
     FOREIGN KEY (ISBN) REFERENCES LIVRES (ISBN) on delete cascade on update cascade,
     foreign key (id_auteur) REFERENCES AUTEURS (ID_AUTEUR) ON delete cascade on update cascade
-);
+);*/
 
 CREATE TABLE IF NOT EXISTS COMPTE
 (
@@ -81,15 +104,15 @@ CREATE TABLE IF NOT EXISTS PROMOTIONS
 (
     id_promotion integer unique not NULL,
     remise       integer,
-    date_debut   datetime not null,
-    date_fin     datetime not null,
+    date_debut   datetime       not null,
+    date_fin     datetime       not null,
     PRIMARY KEY (id_promotion)
 );
 
 CREATE TABLE IF NOT EXISTS APPLIQUER
 (
     id_promotion integer,
-    ISBN         BIGINT,
+    ISBN         char(10),
     prix_remise  double,
     unique (id_promotion, ISBN),
     FOREIGN KEY (id_promotion) REFERENCES Promotions (id_promotion) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -99,7 +122,7 @@ CREATE TABLE IF NOT EXISTS APPLIQUER
 CREATE TABLE IF NOT EXISTS FACTURER
 (
     id_client  char(36),
-    ISBN       BIGINT,
+    ISBN       char(10),
     id_facture char(36) not null,
     date_achat datetime not null,
     quantite   integer,
@@ -111,7 +134,7 @@ CREATE TABLE IF NOT EXISTS FACTURER
 CREATE TABLE IF NOT EXISTS EVALUER
 (
     id_client   char(36),
-    ISBN        BIGINT,
+    ISBN        char(10),
     note        integer NOT NULL,
     commentaire TEXT,
     date        datetime,
@@ -123,13 +146,13 @@ CREATE TABLE IF NOT EXISTS EVALUER
 CREATE TABLE PANIER
 (
     id_client char(36),
-    ISBN      BIGINT,
+    ISBN      char(10),
     quantity  INTEGER,
     PRIMARY KEY (id_client, ISBN),
     FOREIGN KEY (id_client) REFERENCES Clients (id_client) ON DELETE NO ACTION ON UPDATE CASCADE,
     FOREIGN KEY (ISBN) references LIVRES (ISBN) ON DELETE NO ACTION ON UPDATE CASCADE
 );
-delimiter //
+/*delimiter //
 create procedure insert_tuple_ecrire(isbn bigint, nom_auteur varchar(250))
     deterministic no sql
 begin
@@ -147,7 +170,7 @@ begin
     select id_editeur into id from editeurs where nom = nom_editeur;
     insert into PUBLIER (isbn, id_editeur, annee) VALUES (ISBN, id, publisher_date);
 end //
-delimiter ;
+delimiter ;*/
 
 
 DELIMITER //
@@ -285,15 +308,17 @@ end //
 DELIMITER ;
 
 delimiter //
-create procedure add_panier (id char(36), isbn bigint, quantite int)
+create procedure add_panier(id char(36), isbn bigint, quantite int)
 begin
     declare nombre int;
     declare quantity_in_stock int;
-    select count(*) into nombre from panier where id_client = id and ISBN = isbn ;
+    select count(*) into nombre from panier where id_client = id and ISBN = isbn;
     if nombre > 0 then
-        select quantity into quantity_in_stock from panier where id_client = id and ISBN = isbn ;
+        select quantity into quantity_in_stock from panier where id_client = id and ISBN = isbn;
         update panier
-            set quantity = quantity_in_stock + quantite where id_client = id and ISBN = isbn;
+        set quantity = quantity_in_stock + quantite
+        where id_client = id
+          and ISBN = isbn;
     else
         insert into panier values (id, isbn, quantite);
     end if;
@@ -302,55 +327,61 @@ delimiter ;
 
 delimiter //
 create trigger verify_quantite_on_insert
-    before insert on panier
+    before insert
+    on panier
     for each row
-    begin
-        declare quantity_in_stock int;
-        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
-        if (quantity_in_stock < NEW.quantity) then
-            signal sqlstate '45000'
+begin
+    declare quantity_in_stock int;
+    select quantity into quantity_in_stock from STOCK where STOCK.ISBN = NEW.ISBN;
+    if (quantity_in_stock < NEW.quantity) then
+        signal sqlstate '45000'
             set
                 message_text = 'La quantité est insuffisante';
-        end if;
-    end //
+    end if;
+end //
 delimiter ;
 
 
 delimiter //
 create trigger update_stock_livres_on_insert
-    after insert on panier
+    after insert
+    on panier
     for each row
-    begin
-        declare quantity_in_stock int;
-        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
-        update livres
-            set quantity = quantity_in_stock - NEW.quantity where ISBN = NEW.ISBN;
-    end//
+begin
+    declare quantity_in_stock int;
+    select quantity into quantity_in_stock from STOCK where STOCK.ISBN = NEW.ISBN;
+    update STOCK
+    set quantity = quantity_in_stock - NEW.quantity
+    where ISBN = NEW.ISBN;
+end//
 delimiter ;
 
 delimiter //
 create trigger verify_quantite_on_update
-    before update on panier
+    before update
+    on panier
     for each row
-    begin
-        declare quantity_in_stock int;
-        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
-        if (quantity_in_stock < NEW.quantity) then
-            signal sqlstate '45000'
+begin
+    declare quantity_in_stock int;
+    select quantity into quantity_in_stock from STOCK where STOCK.ISBN = NEW.ISBN;
+    if (quantity_in_stock < NEW.quantity) then
+        signal sqlstate '45000'
             set
                 message_text = 'La quantité est insuffisante';
-        end if;
-    end //
+    end if;
+end //
 delimiter ;
 
 delimiter //
 create trigger update_stock_livres_on_update
-    after update on panier
+    after update
+    on panier
     for each row
-    begin
-        declare quantity_in_stock int;
-        select quantity into quantity_in_stock from LIVRES where LIVRES.ISBN = NEW.ISBN;
-        update livres
-            set quantity = quantity_in_stock - NEW.quantity where ISBN = NEW.ISBN;
-    end //
+begin
+    declare quantity_in_stock int;
+    select quantity into quantity_in_stock from STOCK where STOCK.ISBN = NEW.ISBN;
+    update STOCK
+    set quantity = quantity_in_stock - NEW.quantity
+    where ISBN = NEW.ISBN;
+end //
 delimiter ;
