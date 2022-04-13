@@ -28,15 +28,20 @@ def addProductToCart(isbn):
     if request.method == 'POST':
         if session['loggedin']:
             cur = mysql.connection.cursor()
+            wanted_quantity = int(request.form['quantity'])
             username = session['username']
-            print(username)
             cur.execute(
                 'SELECT id_client FROM associer WHERE identifiant = %s', [username])
             userId = cur.fetchone()
-            try:
-                cur.callproc('add_panier', (userId, isbn, 1))
+
+            given_quantity = cur.execute(
+                'select quantity from stock where isbn=%s', [isbn])
+            if (wanted_quantity > given_quantity):
+                flash("Quantité insuffisante en stock", category="error")
+            elif(wanted_quantity < 0):
+                flash("La quantité doit être positive", category="error")
+            else:
+                cur.callproc('add_panier', (userId, isbn, wanted_quantity))
                 mysql.connection.commit()
-            except:
-                return Response(status=500, mimetype='application/json')
 
             return redirect(url_for('articles.render_articles'))
