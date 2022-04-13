@@ -7,6 +7,5 @@ home = Blueprint('home', __name__)
 def render():
     if 'username' in session:
         username = session['username']
-        print(username)
-        return render_template("home.html", username=username)
-    return render_template("home.html")
+        return render_template("home.html", loggedin=True)
+    return render_template("home.html", loggedIn=False)

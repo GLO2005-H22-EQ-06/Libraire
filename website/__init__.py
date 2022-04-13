@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from flask_mysqldb import MySQL
 
 mysql = MySQL()

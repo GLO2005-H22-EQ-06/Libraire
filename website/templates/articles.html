@@ -27,60 +27,35 @@
         </div>
     </div>
     <div class="container items" id="scroller">
-        <template id="items-template">
-      <div class="card" style="margin: 5% 0">
-        <h5 class="card-header" id="title"></h5>
-        <div class="card-body">
-          <h5>
-            <span class="card-title" id="autor"></span>
-          </h5>
-          <div>
-            <span class="price-tag">30$</span>
-          </div>
-          <p class="card-text" id="description"></p>
-          <a href="#" class="btn btn-primary">Add to cart</a>
+        {% for item in items %}
+        <div class="card" style="margin: 5% 0">
+            <h5 class="card-header" id="title">{{item[1]}}</h5>
+            <div class="card-body">
+                <h5>
+                    <span class="card-title" id="title">{{item[3]}}</span>
+                </h5>
+                <div>
+                    <span class="pageNbr">{{item[5]}} pages</span>
+                </div>
+                <p class="card-text" id="description">{{item[6]}}</p>
+                <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
+                    <input type="number" min="1" value="1" name="quantity">
+                    <input type="submit" value="Add To cart" />
+                </form>
+
+                </button>
+            </div>
         </div>
-      </div>
-    </template>
-    </div>
-    <div class="d-flex justify-content-center mb-3" id="sentinel">
-        <div class="spinner-border" role="status"></div>
+        {% endfor %}
     </div>
 </div>
 
 <script>
-    let scroller = document.getElementById("scroller");
-    let template = document.getElementById("items-template");
-    let sentinel = document.getElementById("sentinel");
-
-    let counter = 0;
-
-    function loadBooks() {
-        fetch(`/loads/books?c=${counter}`).then((response) => {
-            response.json().then((data) => {
-                if (!data.length) {
-                    sentinel.innerHTML = "No more articles";
-                }
-
-                for (var i = 0; i < data.length; i++) {
-                    let template_clone = template.content.cloneNode(true);
-                    template_clone.getElementById("title").innerHTML = data[i][1];
-                    template_clone.getElementById("autor").innerHTML = data[i][3];
-                    template_clone.getElementById("description").innerHTML = data[i][8];
-                    scroller.appendChild(template_clone);
-                    counter += 1;
-                }
-            });
+    function addToCart(isbn) {
+        fetch(`/addToCart/${isbn}`, {
+            method: "POST ",
         });
     }
-
-    var intersectionObserver = new IntersectionObserver((entries) => {
-        if (entries[0].intersectionRatio <= 0) {
-            return;
-        }
-        loadBooks();
-    });
-    intersectionObserver.observe(sentinel);
 </script>
 
 {% endblock %}

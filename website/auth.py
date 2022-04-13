@@ -1,4 +1,5 @@
 from distutils.log import error
+import logging
 from flask import Blueprint, render_template, flash
 from flask import render_template, request, redirect, url_for, session
 import uuid
@@ -23,7 +24,7 @@ def login():
         if compte is not None:
             session['loggedin'] = True
             session['username'] = username
-            return render_template("home.html")
+            return render_template("home.html", loggedin=True)
         else:
             msg = "Account doesn't exist !"
             flash('Incorrect password or username', category='error')
@@ -66,5 +67,11 @@ def register():
             cursor.execute(
                 'INSERT INTO associer VALUES (% s, % s)', (username, id))
             mysql.connection.commit()
-            return render_template("home.html")
+            return render_template("home.html", loggedin=True)
     return render_template("submit.html", msg=msg)
+
+
+@auth.route('/logout')
+def loggin_out():
+    session.pop('username', None)
+    return render_template('home.html', loggedin=False)
