@@ -2,60 +2,54 @@
 <div class="container">
     <div class="flex-between" style="margin-bottom: 16px">
         <h2>Items available</h2>
-        <form class="d-flex" action="{{ url_for(articles.searchByTitle) }}" method="GET">
-            <input class="form-control" type="search" placeholder="Search by name" name="search" value="" />
+        <form class="d-flex" action="" method="GET" name="searchTitle">
+            <input class="form-control" type="search" placeholder="Search by book title" name="search" value="" />
             <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+        <form action="{{url_for('articles.filter')}}" method="GET">
+            <select type="select" class="form-control" name="filter">
+                <option value="None" selected>Select a filter</option>
+                <option value="Rating asc">Rating asc</option>
+                <option value="Rating dsc">Rating dsc</option>
+                <option value="Price asc">Price asc</option>
+                <option value="Price dsc">Price dsc</option>
+                <option value="Nombre de page asc">Nombre de page asc</option>
+                <option value="Nombre de page asc">Nombre de page dsc</option>
+            </select>
+            <button class="btn btn-primary" type="submit" name="filterSearch">Save Filter</button>
         </form>
     </div>
     <div class="d-flex flex-wrap justify-content-center">
-        <div class="me-4">
-            <select type="select" class="form-control">
-        <option value="" selected>Filter by type</option>
-        <option value="history">History</option>
-        <option value="romance">Romance</option>
-        <option value="thriller">Thriller</option>
-      </select>
-        </div>
-        <div class="me-4">
-            <select type="select" class="form-control">
-        <option selected value="6">Results per page</option>
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="0">All</option>
-      </select>
-        </div>
-    </div>
-    <div class="container items" id="scroller">
-        {% for item in items %}
-        <div class="card" style="margin: 5% 0">
-            <h5 class="card-header" id="title">{{item[1]}}</h5>
-            <div class="card-body">
-                <h5>
-                    <span class="card-title" id="title">{{item[3]}}</span>
-                </h5>
-                <div>
-                    <span class="pageNbr">Price : {{item[9]}} $</span>
+        <div class="container items" id="scroller">
+            {% for item in items %}
+            <div class="card" style="margin: 5% 0">
+                <h5 class="card-header" id="title">{{item[1]}}</h5>
+                <div class="card-body">
+                    <h5>
+                        <span class="card-title" id="title">{{item[3]}}</span>
+                    </h5>
+                    <div>
+                        <span class="pageNbr">Price : {{item[9]}} $</span>
+                    </div>
+                    <p class="card-text" id="description">{{item[6]}}</p>
+                    <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
+                        <input type="number" min="1" value="1" name="quantity">
+                        <input type="submit" value="Add To cart" />
+                    </form>
+
+                    </button>
                 </div>
-                <p class="card-text" id="description">{{item[6]}}</p>
-                <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
-                    <input type="number" min="1" value="1" name="quantity">
-                    <input type="submit" value="Add To cart" />
-                </form>
-
-                </button>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 
-<script>
-    function addToCart(isbn) {
-        fetch(`/addToCart/${isbn}`, {
-            method: "POST ",
-        });
-    }
-</script>
+    <script>
+        function addToCart(isbn) {
+            fetch(`/addToCart/${isbn}`, {
+                method: "POST ",
+            });
+        }
+    </script>
 
-{% endblock %}
+    {% endblock %}
