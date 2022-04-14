@@ -6,8 +6,12 @@
             <input class="form-control" type="search" placeholder="Search by book title" name="search" value="" />
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
-        <form action="{{url_for('articles.filter')}}" method="GET">
-            <select type="select" class="form-control" name="filter">
+
+    </div>
+    <div class="d-flex flex-wrap justify-content-center">
+        <div class="mb-3 d-flex">
+            <form id="filter-div" action="{{url_for('articles.filter')}}" method="GET">
+                <select type="select" class="form-control" name="filter">
                 <option value="None" selected>Select a filter</option>
                 <option value="Rating asc">Rating asc</option>
                 <option value="Rating dsc">Rating dsc</option>
@@ -15,11 +19,11 @@
                 <option value="Price dsc">Price dsc</option>
                 <option value="Nombre de page asc">Nombre de page asc</option>
                 <option value="Nombre de page asc">Nombre de page dsc</option>
-            </select>
-            <button class="btn btn-primary" type="submit" name="filterSearch">Save Filter</button>
-        </form>
-    </div>
-    <div class="d-flex flex-wrap justify-content-center">
+                </select>
+                <button class="btn btn-outline-primary" type="submit" name="filterSearch" id="saveFilterbutton">Save</button>
+            </form>
+        </div>
+
         <div class="container items" id="scroller">
             {% for item in items %}
             <div class="card" style="margin: 5% 0">
@@ -34,7 +38,7 @@
                     <p class="card-text" id="description">{{item[6]}}</p>
                     <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
                         <input type="number" min="1" value="1" name="quantity">
-                        <input type="submit" value="Add To cart" />
+                        <input class="btn btn-primary" type="submit" value="Add To cart" />
                     </form>
 
                     </button>
@@ -42,6 +46,26 @@
             </div>
             {% endfor %}
         </div>
+        <ul class="pagination">
+            <li class="page-item">
+                {% if prev >= 1%}
+                <a class="page-link" href="{{url_for('articles.render_articles', page=prev)}}" aria-label="Previous"></a>
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span> {% endif %}
+            </li>
+            {% for page in range(page) %}
+            <li class="page-item">
+                <a class="page-link" href="{{url_for('articles.render_articles', page=loop.index)}}">{{loop.index}}</a>
+            </li>
+            {% endfor %}
+
+            <li class="page-item">
+                {% if page >= next %}
+                <a class="page-link" href="{{url_for('articles.render_articles', page=next)}}" aria-label="Next"></a>
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span> {% endif%}
+            </li>
+        </ul>
     </div>
 
     <script>
@@ -51,5 +75,12 @@
             });
         }
     </script>
+
+    <style>
+        #filter-div {
+            display: flex;
+            height: 35px;
+        }
+    </style>
 
     {% endblock %}
