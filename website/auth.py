@@ -1,5 +1,3 @@
-from distutils.log import error
-import logging
 from flask import Blueprint, render_template, flash
 from flask import render_template, request, redirect, url_for, session
 import uuid

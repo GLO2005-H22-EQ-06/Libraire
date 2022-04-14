@@ -412,3 +412,5 @@ delimiter ;
 
 select * from panier;
 select * from livres natural join (select * from panier where PANIER.id_client = '91c2b26d-bb68-11ec-918d-0492266e77ce') as all_prod;
+
+select * from livres order by ISBN limit 10 offset 20;
