@@ -20,15 +20,14 @@
             <div class="navbar-nav">
                 <a class="nav-item nav-link" id="home" href="/">Home</a>
                 <a class="nav-item nav-link" id="login" href="/login">Login</a>
-                <a class="nav-item nav-link" id="signUp" href="/register">Sign Up</a>
-                <a class="nav-item nav-link" id="signUp" href="/articles">Offers</a>
+                <a class="nav-item nav-link" id="signUp" href="/articles">Books</a>
                 <a class="nav-item nav-link" id="cart" href="/panier">
                     <i class="fa-solid fa-cart-shopping"></i>
                 </a>
-                <a class="nav-item nav-link" id="logout" href="{{url_for('auth.loggin_out')}}">
-            Log Out</a
-          >
-        </div>
+                {% if loggedin %}
+                <a class="nav-item nav-link" id="logout" href="{{url_for('auth.loggin_out')}}">Log Out</a>
+                {% endif %}
+            </div>
       </div>
     </nav>
     {% endblock %} {% with messages = get_flashed_messages(with_categories=true)

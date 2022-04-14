@@ -15,7 +15,6 @@ def render_articles():
         "SELECT * FROM livres OFFSET %s ROWS FETCH NEXT %s ROWS ONLY", (offset, item_per_page))"""
     cur.execute("SELECT * FROM livres LIMIT 100")
     items = cur.fetchall()
-    if session['loggedin'] == True:
-        userId = session['username']
-        return render_template("articles.html", userId=userId, items=items)
-    return render_template("articles.html", items=items)
+    if 'username' in session:
+        return render_template("articles.html", items=items, loggedin=True)
+    return render_template("articles.html", items=items, loggedin=False)

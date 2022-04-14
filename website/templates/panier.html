@@ -9,19 +9,17 @@
             <i class="fa-solid fa-book"></i>
         </div>
         <div class="product-details">
-            <div class="card-title" id="title">{{article[0]}}</div>
-            <div class="card-text" id="description">{{article[0]}}</div>
+            <div class="card-title" id="title">{{article[1]}}</div>
+            <div class="card-text" id="description">{{article[2]}}</div>
         </div>
-        <div class="product-price">{{article[0]}} $</div>
+        <div class="product-price">{{article[5]}} $</div>
         <div class="product-quantity">
-            <input type="number" value="1" min="1" />
+            <input type="number" value={{ article[10] }} min="1" />
         </div>
 
-        <div class="product-removal">
-            <button class="btn btn-danger" id="remove-product">Remove</button>
-        </div>
-
-        <div class="product-line-price">45.99</div>
+        <form class="product-removal" id="remove" action="{{ url_for('panier.removeProductFromCart', isbn=article[0]) }}" method="post">
+            <input class="btn btn-danger" type="submit" value="Remove"/>
+        </form>
     </div>
     {% endfor %}
     <div class="totals">
@@ -175,6 +173,8 @@
     
     .product-removal {
         width: auto;
+        margin-left: 150px;
     }
+
 </style>
 {% endblock %}

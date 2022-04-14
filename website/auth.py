@@ -67,6 +67,9 @@ def register():
             cursor.execute(
                 'INSERT INTO associer VALUES (% s, % s)', (username, id))
             mysql.connection.commit()
+
+            session['loggedin'] = True
+            session['username'] = username
             return render_template("home.html", loggedin=True)
     return render_template("submit.html", msg=msg)
 
@@ -74,4 +77,5 @@ def register():
 @auth.route('/logout')
 def loggin_out():
     session.pop('username', None)
+    session.pop('loggedin', False)
     return render_template('home.html', loggedin=False)

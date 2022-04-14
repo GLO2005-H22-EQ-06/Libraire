@@ -7,19 +7,14 @@ import pymysql as sql
 
 names = ["bookID", 'title', "authors", "average_rating", "isbn", "isbn13", "language_code", "num_pages",
          "ratings_count", "text_reviews_count", "publication_date", "publisher"]
-df = pd.read_csv('./csv/books.csv', delimiter=',', names=names)
+df = pd.read_csv('../csv/books.csv', delimiter=',', names=names)
 host = "root"
-pwd = "root"
+pwd = "EnvyUS123"
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
 conn.begin()
 cursor = conn.cursor()
 
-print(lorem.paragraph())
-
-#exit(0)
-# command = f"""INSERT INTO LIVRES( ISBN, titre, auteur, langue, editeur, annee, nbrepages, description) values ({str(uuid.uuid4()), })"""
-# cursor.execute()
 n = 0
 for index, row in df.iterrows():
     # print(row.values[0], row.values[10])
@@ -37,5 +32,4 @@ for index, row in df.iterrows():
     except Exception as err:
         print(err)
 
-# conn.commit()
 conn.close()

@@ -11,10 +11,19 @@ def render_panier():
     if request.method == 'GET':
         if 'username' in session:
             username = session['username']
-            return render_template("panier.html", loggedin=True, username=username)
+            cur = mysql.connection.cursor()
+
+            cur.execute('select id_client from associer where identifiant = %s', [username])
+            userid = cur.fetchone()
+
+            cur.execute('select * from livres natural join (select * from panier where PANIER.id_client = %s) as all_prod;', [userid])
+            all_cart_products = cur.fetchall()
+
+            return render_template("panier.html", loggedin=True, username=username, panier=all_cart_products)
+
         flash('You have to connect or to create an account for acceding cart',
               category='error')
-        return render_template("home.html", loggedin=False)
+        return redirect(url_for('articles.render_articles'))
 
 
 @panier.route('/checkout', methods=['GET', 'POST'])
@@ -26,7 +35,7 @@ def render_checkout():
 @panier.route('/addToCart/<string:isbn>', methods=['POST'])
 def addProductToCart(isbn):
     if request.method == 'POST':
-        if session['loggedin']:
+        if 'username' in session:
             cur = mysql.connection.cursor()
             wanted_quantity = int(request.form['quantity'])
             username = session['username']
@@ -45,3 +54,21 @@ def addProductToCart(isbn):
                 mysql.connection.commit()
 
             return redirect(url_for('articles.render_articles'))
+        flash("You have to be connected to add an article to your cart", category='error')
+        return redirect(url_for('articles.render_articles'))
+
+@panier.route('/remove/<string:isbn>', methods=['POST'])
+def removeProductFromCart(isbn):
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        username = session['username']
+        cur.execute('select id_client from associer where identifiant = %s', [username])
+        userid = cur.fetchone()
+
+        cur.execute('delete from panier where id_client = %s and isbn = %s', [userid, isbn])
+        mysql.connection.commit()
+        flash('Item successfully removed')
+        return redirect(url_for('panier.render_panier'))
+
+
+
