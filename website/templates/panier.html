@@ -12,9 +12,12 @@
             <div class="card-title" id="title">{{article[1]}}</div>
             <div class="card-text" id="description">{{article[2]}}</div>
         </div>
-        <div class="product-price">{{article[5]}} $</div>
+        <div class="product-price">{{article[9] * article[11] }} $</div>
         <div class="product-quantity">
-            <input type="number" value={{ article[10] }} min="1" />
+            <form class="quantity_removal" id="OK" action="{{ url_for('panier.update_quantity', isbn=article[0]) }}" method="post">
+                <input name="quantity" type="number" value={{ article[11] }} min="1" />
+                <input class="btn btn-danger" type="submit" value="Save"/>
+            </form>
         </div>
 
         <form class="product-removal" id="remove" action="{{ url_for('panier.removeProductFromCart', isbn=article[0]) }}" method="post">

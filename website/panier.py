@@ -42,10 +42,11 @@ def addProductToCart(isbn):
             cur.execute(
                 'SELECT id_client FROM associer WHERE identifiant = %s', [username])
             userId = cur.fetchone()
-
-            given_quantity = cur.execute(
+            cur.execute(
                 'select quantity from stock where isbn=%s', [isbn])
-            if (wanted_quantity > given_quantity):
+            given_quantity = cur.fetchone()
+            print(given_quantity)
+            if (wanted_quantity > given_quantity[0]):
                 flash("Quantité insuffisante en stock", category="error")
             elif(wanted_quantity < 0):
                 flash("La quantité doit être positive", category="error")
@@ -64,10 +65,37 @@ def removeProductFromCart(isbn):
         username = session['username']
         cur.execute('select id_client from associer where identifiant = %s', [username])
         userid = cur.fetchone()
+        print(userid)
+        cur.execute('select quantity from panier where id_client = %s and isbn = %s', [userid, isbn])
+        quantity_in_cart = cur.fetchone()
+        cur.callproc('add_panier', (userid, isbn, -quantity_in_cart[0]))
+        mysql.connection.commit()
 
         cur.execute('delete from panier where id_client = %s and isbn = %s', [userid, isbn])
         mysql.connection.commit()
         flash('Item successfully removed')
+        return redirect(url_for('panier.render_panier'))
+
+@panier.route('/update/<string:isbn>', methods=['POST'])
+def update_quantity(isbn):
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        username = session['username']
+        cur.execute('select id_client from associer where identifiant = %s', [username])
+        userid = cur.fetchone()
+
+        cur.execute('select quantity from panier where id_client = %s and isbn = %s', [userid, isbn])
+        given_quantity = cur.fetchone()[0]
+        new_quantity = int (request.form['quantity'])
+        updated_quantity = new_quantity - given_quantity
+        try :
+            cur.callproc('add_panier', (userid, isbn, updated_quantity))
+            mysql.connection.commit()
+        except :
+            flash('Quantité insuffisante en stock', category='error')
+            return redirect(url_for('panier.render_panier'))
+
+        flash('Quantity updated successfully')
         return redirect(url_for('panier.render_panier'))
 
 

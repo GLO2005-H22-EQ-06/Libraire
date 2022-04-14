@@ -2,7 +2,7 @@
 <div class="container">
     <div class="flex-between" style="margin-bottom: 16px">
         <h2>Items available</h2>
-        <form class="d-flex" action="" method="GET">
+        <form class="d-flex" action="{{ url_for(articles.searchByTitle) }}" method="GET">
             <input class="form-control" type="search" placeholder="Search by name" name="search" value="" />
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
@@ -35,7 +35,7 @@
                     <span class="card-title" id="title">{{item[3]}}</span>
                 </h5>
                 <div>
-                    <span class="pageNbr">{{item[5]}} pages</span>
+                    <span class="pageNbr">Price : {{item[9]}} $</span>
                 </div>
                 <p class="card-text" id="description">{{item[6]}}</p>
                 <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">

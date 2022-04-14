@@ -20,7 +20,8 @@ create table LIVRES (
   nbrepages integer null,
   description text null,
   annee date,
-  note double default null null
+  note double default null null,
+  prix double
 );
 create unique index LIVRES_ISBN_uindex on LIVRES (ISBN);
 create index search_auteur on LIVRES (auteur);
@@ -29,7 +30,6 @@ create index search_titre on LIVRES (titre);
 CREATE TABLE STOCK (
   ISBN char(10) unique,
   quantity int,
-  prix double,
   primary key (isbn)
 );
 /*CREATE TABLE IF NOT EXISTS EDITEURS
@@ -412,4 +412,3 @@ delimiter ;
 
 select * from panier;
 select * from livres natural join (select * from panier where PANIER.id_client = '91c2b26d-bb68-11ec-918d-0492266e77ce') as all_prod;
-drop table appliquer;

@@ -18,13 +18,13 @@ cursor = conn.cursor()
 n = 0
 for index, row in df.iterrows():
     # print(row.values[0], row.values[10])
-    com1 = "INSERT INTO LIVRES (ISBN, titre, langue, auteur, editeur, nbrepages, description, annee ) " \
-           "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    com2 = "INSERT INTO STOCK values (%s, %s, %s)"
-    data2 = (row.values[4], random.randint(1, 250), random.random() * 200 + 1)
+    com1 = "INSERT INTO LIVRES (ISBN, titre, langue, auteur, editeur, nbrepages, description, annee, prix) " \
+           "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    com2 = "INSERT INTO STOCK values (%s, %s)"
+    data2 = (row.values[4], random.randint(1, 250))
     data1 = (str(row.values[4]), row.values[1][0:249], row.values[6], row.values[2][0:249],
              row.values[11], str(row.values[7]), lorem.paragraph(),
-             datetime.strptime(row.values[10], '%m/%d/%Y'))
+             datetime.strptime(row.values[10], '%m/%d/%Y'), random.random() * 200 + 1)
     try:
         cursor.execute(com1, data1)
         cursor.execute(com2, data2)
