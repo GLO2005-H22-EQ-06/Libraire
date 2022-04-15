@@ -1,0 +1,38 @@
+{% extends 'base.html' %} {% block body %}
+<div class="row mb-3 justify-content-center margin: top-50">
+    <div class="col-12 col-md-4">
+        <div class="card">
+            <div class="card-body py-4">
+                <div class="d-flex flex-column align-items-center text-center pb-1">
+                    <div class="my-4 card-text">
+                        <h2>{{profil[1]}}, {{profil[2]}}</h2>
+                        <p class="mb-1 color-gray-dark">{{ profil[3] }}</p>
+                    </div>
+                    <h4>Adresse : {{ profil[4] }}</h4>
+                    <h4>Telephone : {{profil[5]}}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">N° de commande</th>
+                <th scope="col">Date</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for commande in commandes %}
+            <tr>
+                <th scope="row">{{loop.index}}</th>
+                <td>{{commande[0]}}</td>
+                <td>{{commande[0]}}</td>
+                <td>{{commande[0]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </div>
+</div>
+{% endblock %}

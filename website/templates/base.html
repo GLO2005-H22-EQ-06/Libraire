@@ -27,6 +27,12 @@
           </a> {% if loggedin %}
                 <a class="nav-item nav-link" id="logout" href="{{url_for('auth.loggin_out')}}">Log Out</a
           >
+          <a
+            class="nav-item nav-link"
+            id="logout"
+            href="{{url_for('user.getUserInfo')}}"
+            >My profil</a
+          >
           {% endif %}
         </div>
       </div>

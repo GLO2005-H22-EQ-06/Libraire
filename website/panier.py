@@ -13,7 +13,8 @@ def render_panier():
             username = session['username']
             cur = mysql.connection.cursor()
 
-            cur.execute('select id_client from associer where identifiant = %s', [username])
+            cur.execute(
+                'select id_client from associer where identifiant = %s', [username])
             userid = cur.fetchone()
 
             cur.execute(
@@ -34,7 +35,8 @@ def render_checkout():
         username = session['username']
         cur = mysql.connection.cursor()
 
-        cur.execute('select id_client from associer where identifiant = %s', [username])
+        cur.execute(
+            'select id_client from associer where identifiant = %s', [username])
         userid = cur.fetchone()
 
         cur.callproc("transfert_from_cart_to_bill", (userid))
@@ -64,7 +66,8 @@ def addProductToCart(isbn):
                 mysql.connection.commit()
 
             return redirect(url_for('articles.render_articles'))
-        flash("You have to be connected to add an article to your cart", category='error')
+        flash("You have to be connected to add an article to your cart",
+              category='error')
         return redirect(url_for('articles.render_articles'))
 
 
@@ -73,15 +76,18 @@ def removeProductFromCart(isbn):
     if request.method == 'POST':
         cur = mysql.connection.cursor()
         username = session['username']
-        cur.execute('select id_client from associer where identifiant = %s', [username])
+        cur.execute(
+            'select id_client from associer where identifiant = %s', [username])
         userid = cur.fetchone()
         print(userid)
-        cur.execute('select quantity from panier where id_client = %s and isbn = %s', [userid, isbn])
+        cur.execute('select quantity from panier where id_client = %s and isbn = %s', [
+                    userid, isbn])
         quantity_in_cart = cur.fetchone()
         cur.callproc('add_panier', (userid, isbn, -quantity_in_cart[0]))
         mysql.connection.commit()
 
-        cur.execute('delete from panier where id_client = %s and isbn = %s', [userid, isbn])
+        cur.execute(
+            'delete from panier where id_client = %s and isbn = %s', [userid, isbn])
         mysql.connection.commit()
         flash('Item successfully removed')
         return redirect(url_for('panier.render_panier'))
@@ -92,10 +98,12 @@ def update_quantity(isbn):
     if request.method == 'POST':
         cur = mysql.connection.cursor()
         username = session['username']
-        cur.execute('select id_client from associer where identifiant = %s', [username])
+        cur.execute(
+            'select id_client from associer where identifiant = %s', [username])
         userid = cur.fetchone()
 
-        cur.execute('select quantity from panier where id_client = %s and isbn = %s', [userid, isbn])
+        cur.execute('select quantity from panier where id_client = %s and isbn = %s', [
+                    userid, isbn])
         given_quantity = cur.fetchone()[0]
         new_quantity = int(request.form['quantity'])
         updated_quantity = new_quantity - given_quantity
