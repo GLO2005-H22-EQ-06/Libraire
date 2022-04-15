@@ -477,13 +477,17 @@ begin
     select current_timestamp into date_facture;
     select uuid() into new_id;
     select sum(get_prix_remise(P.isbn)) into prix_t from PANIER P where P.id_client = p_idClient;
-    insert into Commandes values (p_idClient, new_id, date_facture, prix_t);
+
     open curseur;
     lecteur:
     loop
         fetch curseur into p_isbn, p_quantity;
+        if lecture_complete then
+            leave lecteur;
+        end if;
         insert into facturer values (p_idClient, p_isbn, new_id, p_quantity);
     end loop lecteur;
+    insert into Commandes values (p_idClient, new_id, date_facture, prix_t);
     close curseur;
 end //
 delimiter ;
