@@ -32,6 +32,11 @@ def render_articles(page):
         return render_template("articles.html", items=items, loggedin=True, page=total_page, next=next, prev=prev)
     return render_template("articles.html", items=items, loggedin=False, page=total_page, next=next, prev=prev)
 
+@articles.route('/articles/details/isbn=<string:isbn>')
+def viewBook(isbn) :
+    return render_template('livre.html')
+
+
 
 @articles.route('/articles/filters')
 def filter():
