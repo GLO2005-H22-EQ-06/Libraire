@@ -422,6 +422,21 @@ end //
 delimiter ;
 
 delimiter //
+create trigger update_prix_remise
+    after update
+    on PROMOTIONS
+    for each row
+begin
+    declare p_promo integer;
+    declare p_prix_initial double;
+    if NEW.remise != OLD.remise then
+        update appliquer A
+            set A.prix_remise = A.prix_remise * (100 - NEW.remise)/(100 - OLD.remise) where A.id_promotion = NEW.id_promotion;
+    end if ;
+end //
+delimiter ;
+
+delimiter //
 create function get_prix_remise(p_isbn char(10)) returns double
     deterministic no sql
 Begin
@@ -467,4 +482,6 @@ delimiter ;
 /*insert into PROMOTIONS(remise, date_debut, date_fin)
 values (floor(rand() * 90) + 1, current_timestamp(), adddate(current_timestamp, 50));
 
-insert into APPLIQUER(id_promotion, ISBN) values (2,"000649689X");*/
+insert into APPLIQUER(id_promotion, ISBN) values (2,"000649689X");
+update PROMOTIONS
+set remise = 50 where id_promotion = 2;*/
