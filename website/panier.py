@@ -16,7 +16,9 @@ def render_panier():
             cur.execute('select id_client from associer where identifiant = %s', [username])
             userid = cur.fetchone()
 
-            cur.execute('select * from livres natural join (select * from panier where PANIER.id_client = %s) as all_prod;', [userid])
+            cur.execute(
+                'select * from livres natural join (select * from panier where PANIER.id_client = %s) as all_prod;',
+                [userid])
             all_cart_products = cur.fetchall()
 
             return render_template("panier.html", loggedin=True, username=username, panier=all_cart_products)
@@ -29,6 +31,13 @@ def render_panier():
 @panier.route('/checkout', methods=['GET', 'POST'])
 def render_checkout():
     if request.method == 'POST':
+        username = session['username']
+        cur = mysql.connection.cursor()
+
+        cur.execute('select id_client from associer where identifiant = %s', [username])
+        userid = cur.fetchone()
+
+        cur.callproc("transfert_from_cart_to_bill", (userid))
         return render_template("checkout.html")
 
 
@@ -48,7 +57,7 @@ def addProductToCart(isbn):
             print(given_quantity)
             if (wanted_quantity > given_quantity[0]):
                 flash("Quantité insuffisante en stock", category="error")
-            elif(wanted_quantity < 0):
+            elif (wanted_quantity < 0):
                 flash("La quantité doit être positive", category="error")
             else:
                 cur.callproc('add_panier', (userId, isbn, wanted_quantity))
@@ -57,6 +66,7 @@ def addProductToCart(isbn):
             return redirect(url_for('articles.render_articles'))
         flash("You have to be connected to add an article to your cart", category='error')
         return redirect(url_for('articles.render_articles'))
+
 
 @panier.route('/remove/<string:isbn>', methods=['POST'])
 def removeProductFromCart(isbn):
@@ -76,6 +86,7 @@ def removeProductFromCart(isbn):
         flash('Item successfully removed')
         return redirect(url_for('panier.render_panier'))
 
+
 @panier.route('/update/<string:isbn>', methods=['POST'])
 def update_quantity(isbn):
     if request.method == 'POST':
@@ -86,17 +97,14 @@ def update_quantity(isbn):
 
         cur.execute('select quantity from panier where id_client = %s and isbn = %s', [userid, isbn])
         given_quantity = cur.fetchone()[0]
-        new_quantity = int (request.form['quantity'])
+        new_quantity = int(request.form['quantity'])
         updated_quantity = new_quantity - given_quantity
-        try :
+        try:
             cur.callproc('add_panier', (userid, isbn, updated_quantity))
             mysql.connection.commit()
-        except :
+        except:
             flash('Quantité insuffisante en stock', category='error')
             return redirect(url_for('panier.render_panier'))
 
         flash('Quantity updated successfully')
         return redirect(url_for('panier.render_panier'))
-
-
-
