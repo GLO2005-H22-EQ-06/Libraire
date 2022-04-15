@@ -29,7 +29,7 @@ def render_panier():
         return redirect(url_for('articles.render_articles'))
 
 
-@panier.route('/checkout', methods=['GET', 'POST'])
+@panier.route('/checkout', methods=['POST'])
 def render_checkout():
     if request.method == 'POST':
         username = session['username']
@@ -40,7 +40,9 @@ def render_checkout():
         userid = cur.fetchone()
 
         cur.callproc("transfert_from_cart_to_bill", (userid))
-        return render_template("checkout.html")
+        mysql.connection.commit()
+
+        return redirect(url_for('user.getUserInfo'))
 
 
 @panier.route('/addToCart/<string:isbn>', methods=['POST'])

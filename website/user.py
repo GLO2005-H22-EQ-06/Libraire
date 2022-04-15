@@ -23,7 +23,7 @@ def getUserInfo():
 
     # change for the new function, to get commandeInfo
     cur.execute(
-        'select distinct * from facturer where id_client = %s order by date_achat desc', [userid])
+        'select * from commandes where id_client = %s order by date desc', [userid])
     factures_user = cur.fetchall()
 
     return render_template('userInfo.html', profil=profil_user, commandes=factures_user)

@@ -465,6 +465,8 @@ delimiter //
 create procedure transfert_from_cart_to_bill(in p_idClient char(36))
     deterministic no sql
 begin
+    declare taxe_rate double;
+    declare shipping int;
     declare date_facture datetime;
     declare new_id char(36);
     declare p_isbn char(10);
@@ -476,7 +478,9 @@ begin
     declare continue handler for not found set lecture_complete = TRUE;
     select current_timestamp into date_facture;
     select uuid() into new_id;
-    select sum(get_prix_remise(P.isbn)) into prix_t from PANIER P where P.id_client = p_idClient;
+    set taxe_rate = 1.15;
+    set shipping = 15;
+    select sum(get_prix_remise(P.isbn) * P.quantity) * taxe_rate + shipping into prix_t from PANIER P where P.id_client = p_idClient;
 
     open curseur;
     lecteur:
