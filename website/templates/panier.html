@@ -3,6 +3,7 @@
 
 <div class="shopping-cart" id="shopping-cart">
     <h1 class="heading">My Cart</h1>
+    {% if panier| length %}
     {% for article in panier%}
     <div class="product" id="cart-items">
         <div class="product-image">
@@ -15,13 +16,13 @@
         <div class="product-price">{{article[9] * article[11] }} $</div>
         <div class="product-quantity">
             <form class="quantity_removal" id="OK" action="{{ url_for('panier.update_quantity', isbn=article[0]) }}" method="post">
-                <input name="quantity" type="number" value={{ article[11] }} min="1" />
-                <input class="btn btn-danger" type="submit" value="Save"/>
+                <input name="quantity" type="number" value="{{ article[11] }}" min="1" />
+                <input class="btn btn-danger" type="submit" value="Save" />
             </form>
         </div>
 
         <form class="product-removal" id="remove" action="{{ url_for('panier.removeProductFromCart', isbn=article[0]) }}" method="post">
-            <input class="btn btn-danger" type="submit" value="Remove"/>
+            <input class="btn btn-danger" type="submit" value="Remove" />
         </form>
     </div>
     {% endfor %}
@@ -43,12 +44,15 @@
             <div class="totals-value" id="cart-subtotal"></div>
         </div>
     </div>
-
-    <a class="btn btn-success" id="checkout-button" href="">Checkout</a>
+    <form action="{{ url_for('panier.render_checkout') }}" method="POST">
+        <input class="btn btn-success" id="checkout-button" value="Checkout" type="submit" />
+    </form>
+    {% else %}
+    <h1>Your cart is empty</h1>
+    {% endif %}
 </div>
 
-<script>
-</script>
+<script></script>
 
 <style lang="css">
     .product-image {
@@ -178,6 +182,5 @@
         width: auto;
         margin-left: 150px;
     }
-
 </style>
 {% endblock %}

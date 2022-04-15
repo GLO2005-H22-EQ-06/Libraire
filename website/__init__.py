@@ -17,10 +17,14 @@ def createApp():
     from .auth import auth
     from .panier import panier
     from .articles import articles
+    from .user import user
+    from .evaluer import evaluer
 
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(home, url_prefix='/')
     app.register_blueprint(panier, url_prefix='/')
     app.register_blueprint(articles, url_prefix='/')
+    app.register_blueprint(user, url_prefic='/')
+    app.register_blueprint(evaluer, url_prefic='/')
 
     return app

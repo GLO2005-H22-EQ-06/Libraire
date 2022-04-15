@@ -99,9 +99,9 @@ CREATE TABLE IF NOT EXISTS FACTURER
     id_client  char(36),
     ISBN       char(10),
     id_facture char(36) not null,
-    date_achat datetime not null,
+    #date_achat datetime not null,
     quantite   integer,
-    PRIMARY KEY (id_facture),
+    PRIMARY KEY (id_facture, id_client, ISBN),
     FOREIGN KEY (ISBN) REFERENCES Livres (ISBN) ON DELETE NO ACTION ON UPDATE CASCADE,
     FOREIGN KEY (id_client) REFERENCES Clients (id_client) ON UPDATE CASCADE ON DELETE NO ACTION
 );
@@ -452,31 +452,61 @@ Begin
     end if;
 end //
 delimiter ;
+create table if not exists Commandes
+(
+    id_client char(36) not null ,
+    id_facture char(36) not null,
+    date datetime not null ,
+    prixTotal double not null ,
+    primary key (id_client, id_facture)
+);
 
 delimiter //
 create procedure transfert_from_cart_to_bill(in p_idClient char(36))
     deterministic no sql
 begin
+    declare taxe_rate double;
+    declare shipping int;
     declare date_facture datetime;
     declare new_id char(36);
     declare p_isbn char(10);
     declare p_prix double;
     declare p_quantity int;
+    declare prix_t double;
     declare lecture_complete integer DEFAULT false;
-    declare curseur cursor for select P.isbn, P.quantity, get_prix_remise(P.isbn) from PANIER P;
+    declare curseur cursor for select P.isbn, P.quantity from PANIER P where P.id_client = p_idClient;
     declare continue handler for not found set lecture_complete = TRUE;
     select current_timestamp into date_facture;
     select uuid() into new_id;
+    set taxe_rate = 1.15;
+    set shipping = 15;
+    select sum(get_prix_remise(P.isbn) * P.quantity) * taxe_rate + shipping into prix_t from PANIER P where P.id_client = p_idClient;
+
     open curseur;
     lecteur:
     loop
-        fetch curseur into p_isbn, p_quantity, p_prix;
-        insert into facturer values (p_idClient, p_isbn, new_id, date_facture, p_quantity);
+        fetch curseur into p_isbn, p_quantity;
+        if lecture_complete then
+            leave lecteur;
+        end if;
+        insert into facturer values (p_idClient, p_isbn, new_id, p_quantity);
     end loop lecteur;
+    insert into Commandes values (p_idClient, new_id, date_facture, prix_t);
     close curseur;
-    delete from panier P where P.id_client = p_idClient;
 end //
 delimiter ;
+
+
+delimiter //
+create trigger delete_books
+    after insert on Commandes
+    for each row
+    begin
+        delete from panier P where P.id_client = NEW.id_client;
+    end //
+delimiter ;
+
+
 
 
 /*insert into PROMOTIONS(remise, date_debut, date_fin)
@@ -485,3 +515,4 @@ values (floor(rand() * 90) + 1, current_timestamp(), adddate(current_timestamp, 
 insert into APPLIQUER(id_promotion, ISBN) values (2,"000649689X");
 update PROMOTIONS
 set remise = 50 where id_promotion = 2;*/
+select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by annee desc ;

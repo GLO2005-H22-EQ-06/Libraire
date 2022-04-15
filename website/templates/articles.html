@@ -30,7 +30,9 @@
                 <form name= "BookDetail" id="bookDetailForm" action="{{ url_for('articles.viewBook', isbn=item[0]) }}" method="get">
                     <h5 class="card--header" id="title">{{item[1]}}</h5>
                     <input class="btn" type="submit" value="view details" />
-                    <i class="fa-solid fa-arrow-right"></i>
+                    <a href="{{ url_for('articles.viewBook', isbn=item[0]) }}">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
                 </form>
                 <div class="card-body">
                     <h5>

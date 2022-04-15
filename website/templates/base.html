@@ -19,15 +19,16 @@
         <div class="collapse navbar-collapse justify-content-lg-around" id="navbar">
             <div class="navbar-nav">
                 <a class="nav-item nav-link" id="home" href="/">Home</a>
+                <a class="nav-item nav-link" id="signUp" href="/articles/page/1">Books</a>
+            {% if loggedin %}
+                <a class="nav-item nav-link" id="cart" href="/panier">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
+                <a class="nav-item nav-link" id="logout" href="{{url_for('auth.loggin_out')}}">Log Out</a>
+                <a class="nav-item nav-link" id="logout" href="{{url_for('user.getUserInfo')}}">My profil</a>
+            {% else %}
                 <a class="nav-item nav-link" id="login" href="/login">Login</a>
-                <a class="nav-item nav-link" id="signUp" href="/articles/page/1">Books</a
-          >
-          <a class="nav-item nav-link" id="cart" href="/panier">
-            <i class="fa-solid fa-cart-shopping"></i>
-          </a> {% if loggedin %}
-                <a class="nav-item nav-link" id="logout" href="{{url_for('auth.loggin_out')}}">Log Out</a
-          >
-          {% endif %}
+            {% endif %}
         </div>
       </div>
     </nav>

@@ -26,7 +26,7 @@ def login():
         else:
             msg = "Account doesn't exist !"
             flash('Incorrect password or username', category='error')
-    return render_template("login.html", msg=msg)
+    return render_template("login.html", msg=msg, loggedin=False)
 
 
 @auth.route('/register',  methods=['GET', 'POST'], endpoint='register')
@@ -69,7 +69,7 @@ def register():
             session['loggedin'] = True
             session['username'] = username
             return render_template("home.html", loggedin=True)
-    return render_template("submit.html", msg=msg)
+    return render_template("submit.html", msg=msg, loggedin=False)
 
 
 @auth.route('/logout')

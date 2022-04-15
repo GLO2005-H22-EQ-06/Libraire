@@ -24,7 +24,7 @@ for index, row in df.iterrows():
     data2 = (row.values[4], random.randint(1, 250))
     data1 = (str(row.values[4]), row.values[1][0:249], row.values[6], row.values[2][0:249],
              row.values[11], str(row.values[7]), lorem.paragraph(),
-             datetime.strptime(row.values[10], '%m/%d/%Y'), random.uniform(15, 200))
+             datetime.strptime(row.values[10], '%m/%d/%Y'), round(random.uniform(15, 250), 2))
     try:
         cursor.execute(com1, data1)
         cursor.execute(com2, data2)

@@ -34,7 +34,7 @@ def render_articles(page):
 
 @articles.route('/articles/details/isbn=<string:isbn>')
 def viewBook(isbn) :
-    return render_template('livre.html')
+    return render_template('livre.html', all_evaluations=all_evalutions, loggedin=True)
 
 
 
