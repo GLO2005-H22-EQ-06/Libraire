@@ -1,6 +1,7 @@
 drop database if exists projet_glo_2005;
 create database projet_glo_2005;
 use projet_glo_2005;
+
 create table if not exists CLIENTS (
   id_client varchar(36) not null,
   nom varchar(50) not null,
@@ -17,8 +18,8 @@ create table LIVRES (
   auteur varchar(250) not null,
   editeur varchar(100) not null,
   langue varchar(5) not null,
-  nbrepages integer null,
-  description text null,
+  nbrepages integer not null,
+  description text not null,
   annee date,
   note double default null null,
   prix double
