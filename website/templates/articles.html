@@ -28,15 +28,16 @@
             {% for item in items %}
             <div class="card" style="margin: 5% 0">
                 <form name= "BookDetail" id="bookDetailForm" action="{{ url_for('articles.viewBook', isbn=item[0]) }}" method="get">
-                    <h5 class="card-header" id="title">{{item[1]}}</h5>
+                    <h5 class="card--header" id="title">{{item[1]}}</h5>
                     <input class="btn" type="submit" value="view details" />
+                    <i class="fa-solid fa-arrow-right"></i>
                 </form>
                 <div class="card-body">
                     <h5>
                         <span class="card-title" id="title">{{item[3]}}</span>
                     </h5>
                     <div>
-                        <span class="pageNbr">Price : {{item[9]}} $</span>
+                        <span class="pageNbr">Price : {{ item[9] | int }} $</span>
                     </div>
                     <p class="card-text" id="description">{{item[6]}}</p>
                     <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
@@ -79,7 +80,19 @@
         #bookDetailForm {
             display: flex;
             height: 35px;
-            background-color: #9da3ac;
+            background-color: rgba(179,166,166,0.21);
+            border-bottom: 1px solid rgba(0,0,0,.125);
+        }
+        .card--header {
+            padding: 0.5rem 1rem;
+            margin-bottom: 0;
+        }
+        .btn {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .fa-arrow-right {
+            margin-top: 16px;
         }
 
     </style>
