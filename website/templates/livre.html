@@ -1,11 +1,226 @@
 {% extends 'base.html' %} {% block css %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='livre.css') }}" />{% endblock %} {% block body %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='livre.css') }}" />{% endblock %} {% block
+body %}
+
+<div class="container">
+    <div class="main-body">
+        <div class="row gutters-sm" style="margin-top: 40px;">
+            <div class="col-md-4 mb-3">
+                <div class="card" style="height: 424px;">
+                    <div name="BookDetail" id="bookDetailForm">                        
+                        <h5>Review the book</h5>
+                    </div>
+                    <div class="card-body">
+                        <form class="d-flex flex-column align-items-center text-center" name="review"
+                            action="{{ url_for('evaluer.evaluateBook', isbn=livre[0]) }}" , method="post">
+                            <div style="display: flex;">
+                                <span style="margin-top: 10px;">Note * : </span>
+                                <ul class="rate-area">
+                                    <input type="radio" id="5-star" name="note" value="5" /><label for="5-star"
+                                        title="Amazing">5 stars</label>
+                                    <input type="radio" id="4-star" name="note" value="4" /><label for="4-star"
+                                        title="Good">4 stars</label>
+                                    <input type="radio" id="3-star" name="note" value="3" /><label for="3-star"
+                                        title="Average">3 stars</label>
+                                    <input type="radio" id="2-star" name="note" value="2" /><label for="2-star"
+                                        title="Not Good">2 stars</label>
+                                    <input type="radio" id="1-star" name="note" value="1" /><label for="1-star"
+                                        title="Bad">1 star</label>
+                                </ul>
+                            </div>
+                            <div class="comment-area"> <textarea name="commentaire" class="form-control"
+                                    placeholder="what is your view?" rows="4"></textarea> </div>
+                            <input class="btn btn-primary" type="submit" value="Submit">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card">
+                        <div name="BookDetail" id="bookDetailForm">
+                            <h5 class="card--header" id="title">{{livre[1]}}</h5>
+                        </div>
+                        <div class="card-body">
+                            <h5>
+                                <span class="card-title" id="title">{{livre[2]}}</span>
+                            </h5>
+                            <div class="infos">
+                                <h6 class="pageNbr">ISBN : {{ livre[0]}}</h6>
+                            </div>
+                            <div class="infos">
+                                <i class="fa-solid fa-house-blank"></i>
+                                <h6>Edition : {{ livre[4]}}</h6>
+                            </div>
+                            <div class="infos">
+                                <i class="fa-solid fa-language"></i>
+                                <h6>Language : {{ livre[3]}}</h6>
+                            </div>
+                            <div class="infos">
+                                <i class="fa-solid fa-book-open"></i>
+                                <h6 class="pageNbr">Pages : {{ livre[5]}}</h6>
+                            </div>
+                            <div class="infos">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <h6 class="pageNbr">Year : {{ livre[7]}}</h6>
+                            </div>
+                            <div class="infos">
+                                <h6 class="pageNbr">Note: {{ livre[8] | int }}</h6>
+                                {%for i in range(3)%}
+                                <i class="fa-solid fa-star"></i>
+                                {% endfor %}
+                            </div>
+                            <p class="card-text" id="description">{{livre[6]}}</p>
+                            <div class="infos">
+                                <i class="fa-solid fa-circle-dollar"></i>
+                                <h6 class="pageNbr">Prix : {{ livre[9] | int }} $</h6>
+                            </div>
+                            <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=livre[0]) }}"
+                                method="post">
+                                <input type="number" min="1" value="1" name="quantity" />
+                                <input class="btn btn-primary" type="submit" value="Add To cart" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-div">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Username</th>
+          <th scope="col">Date</th>
+          <th scope="col">Rating</th>
+          <th scope="col">Review</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">{{current_user_evaluated_books[0]}}</th>
+          <td>{{current_user_evaluated_books[6]}}</td>
+          <td>
+            {% for i in range(current_user_rating) %}
+                <span style="font-size:150%;color:gold;">&starf;</span>
+            {% endfor %}
+          </td>
+          <td>{{current_user_evaluated_books[5]}}</td>
+        </tr>
+        {% for evaluation in all_other_evaluations %}
+        <tr>
+          <th scope="row">{{evaluation[1]}}</th>
+          <td>{{evaluation[5]}}</td>
+          <td>
+            {% for number in range(ratings_len)%}
+            {% for i in range(ratings[number]) %}
+                <span style="font-size:150%;color:gold;">&starf;</span>
+            {% endfor %}
+            {% endfor %}        
+          </td>
+          <td>{{evaluation[4]}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+<style>
+    .commentBox {
+        width: 50%;
+    }
+
+    #bookDetailForm {
+        padding-top: 7px;
+        display: flex;
+        justify-content: center;
+        height: 40px;
+        background-color: #0d6efd;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .infos {
+        display: flex;
+    }
+
+    i {
+        margin-right: 15px;
+    }
+
+    .comment {
+
+        margin-top: 20px;
+
+    }
+
+    .comment-box {
+        padding: 5px
+    }
+
+    .comment-area textarea {
+        resize: none;
+        border: 1px solid #ad9f9f
+    }
+
+    .comment-area {
+        width: 350px;
+        margin-top: 30px;
+        height: 170px;
+    }
+
+    .form-control:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #ffffff;
+        outline: 0;
+        box-shadow: #0d6efd !important
+    }
 
 
+    .rate-area {
+        border-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
+    .rate-area:not(:checked)>input {
+        position: absolute;
+        top: -9999px;
+        clip: rect(0, 0, 0, 0);
+    }
 
+    .rate-area:not(:checked)>label {
+        float: right;
+        width: 0.8em;
+        overflow: hidden;
+        white-space: nowrap;
+        cursor: pointer;
+        font-size: 180%;
+        color: lightgrey;
+    }
 
+    .rate-area:not(:checked)>label:before {
+        content: "★";
+    }
 
+    .rate-area>input:checked~label {
+        color: gold;
+    }
 
+    .rate-area:not(:checked)>label:hover,
+    .rate-area:not(:checked)>label:hover~label {
+        color: gold;
+    }
+
+    .rate-area>input:checked+label:hover,
+    .rate-area>input:checked+label:hover~label,
+    .rate-area>input:checked~label:hover,
+    .rate-area>input:checked~label:hover~label,
+    .rate-area>label:hover~input:checked~label {
+        color: gold;
+    }
+</style>
 
 {% endblock %}

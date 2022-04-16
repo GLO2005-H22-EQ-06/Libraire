@@ -30,13 +30,41 @@ def render_articles(page):
     cur.execute(
         "select * from livres order by ISBN limit %s offset %s", (limit, offset))
     items = cur.fetchall()
-
     loggedIn = 'username' in session
     return render_template("articles.html", items=items, loggedin=loggedIn, total_page=total_page, page_start=page_start, page_end =page_end, next=next, prev=prev, searchInput="Search by title", current_page=page)
 
 @articles.route('/articles/details/isbn=<string:isbn>')
 def viewBook(isbn) :
-    return render_template('livre.html', all_evaluations=all_evaluations, loggedin=True)
+    cur = mysql.connection.cursor()
+    cur.execute('select * from livres where isbn = %s', [isbn])
+    livre = cur.fetchone()
+
+    username = session['username']
+
+    cur.execute(
+    'SELECT id_client FROM associer WHERE identifiant = %s', [username])
+    userId = cur.fetchone()
+
+    cur.execute(
+        'SELECT * from associer JOIN (SELECT * FROM evaluer WHERE id_client=%s and ISBN=%s) as tb on associer.id_client = tb.id_client', [userId, isbn])
+    current_user_evaluated_books= cur.fetchone()
+    if current_user_evaluated_books:
+        current_user_rating = current_user_evaluated_books[4]
+    else:
+        current_user_rating = 0
+    
+    cur.execute(
+        'SELECT * from associer natural join evaluer WHERE id_client !=%s and isbn=%s', [userId, isbn])
+    all_other_evaluations= cur.fetchall()
+    ratings =[]
+    for evaluation in all_other_evaluations:
+        ratings.append(evaluation[3])
+    ratings_len = len(ratings)
+
+    loggedIn = 'username' in session
+    return render_template('livre.html', livre=livre, 
+            all_other_evaluations=all_other_evaluations, current_user_evaluated_books=current_user_evaluated_books, 
+            current_user_rating=current_user_rating, ratings=ratings, ratings_len=ratings_len, loggedin=loggedIn)
 
 
 @articles.route('/articles/filters/byTitle/<int:page>', methods=['GET'])

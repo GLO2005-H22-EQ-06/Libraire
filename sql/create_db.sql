@@ -2,8 +2,6 @@ drop database if exists projet_glo_2005;
 create database projet_glo_2005;
 use projet_glo_2005;
 
-select * from livres;
-
 create table if not exists CLIENTS
 (
     id_client varchar(36) not null,
@@ -38,34 +36,7 @@ CREATE TABLE STOCK
     quantity int,
     primary key (isbn)
 );
-/*CREATE TABLE IF NOT EXISTS EDITEURS
-(
-    id_editeur int auto_increment,
-    nom        varchar(100) unique,
-    primary key (id_editeur)
-);
-CREATE TABLE IF NOT EXISTS PUBLIER (
-  ISBN BIGINT,
-  id_editeur integer not null,
-  annee date,
-  PRIMARY KEY (ISBN, id_editeur),
-  foreign key (ISBN) references livres (ISBN) on delete cascade on update cascade,
-  foreign key (id_editeur) references EDITEURS (id_editeur) on delete cascade on update cascade
-);
-CREATE TABLE IF NOT EXISTS AUTEURS (
-  id_auteur int auto_increment,
-  nom varchar(250) not null,
-  primary key (id_auteur)
-);
 
-create table if not exists ECRIRE
-(
-    ISBN      BIGINT,
-    id_auteur integer not null,
-    unique (ISBN, id_auteur),
-    FOREIGN KEY (ISBN) REFERENCES LIVRES (ISBN) on delete cascade on update cascade,
-    foreign key (id_auteur) REFERENCES AUTEURS (ID_AUTEUR) ON delete cascade on update cascade
-);*/
 CREATE TABLE IF NOT EXISTS COMPTE
 (
     identifiant varchar(20) unique,
@@ -146,66 +117,6 @@ BEGIN
 end //
 delimiter ;
 
-/*delimiter //
-create trigger verify_quantite_on_insert
-    before
-        insert
-    on panier
-    for each row
-begin
-    declare quantity_in_stock int;
-    select quantity
-    into quantity_in_stock
-    from LIVRES
-    where LIVRES.ISBN = NEW.ISBN;
-    if (quantity_in_stock < NEW.quantity) then
-        signal sqlstate '45000'
-            set
-                message_text = 'La quantité est insuffisante';
-    end if;
-end //
-delimiter ;
-delimiter / /
-create trigger update_stock_livres_on_insert
-    after
-        insert
-    on panier
-    for each row
-begin
-    declare quantity_in_stock int;
-    select quantity
-    into quantity_in_stock
-    from LIVRES
-    where LIVRES.ISBN = NEW.ISBN;
-    update
-        livres
-    set quantity = quantity_in_stock - NEW.quantity
-    where ISBN = NEW.ISBN;
-end //
-delimiter ;
-
-delimiter //
-create trigger verify_quantite_on_update
-    before
-        update
-    on panier
-    for each row
-begin
-    declare quantity_in_stock int;
-    select quantity
-    into quantity_in_stock
-    from LIVRES
-    where LIVRES.ISBN = NEW.ISBN;
-    if (quantity_in_stock < NEW.quantity) then
-        signal sqlstate '45000'
-            set
-                message_text = 'La quantité est insuffisante';
-    end if;
-end //
-
-delimiter ;*/
-
-
 DELIMITER //
 CREATE PROCEDURE validate_uuid(IN in_uuid char(36))
     DETERMINISTIC NO SQL
@@ -274,7 +185,7 @@ BEGIN
     IF (
            SELECT COUNT(*)
            FROM Evaluer
-           WHERE id_client = NEW.id_client
+           WHERE id_client = NEW.id_client and isbn= NEW.isbn
        ) > 1 THEN
         SIGNAL SQLSTATE '45000'
             SET
@@ -282,6 +193,8 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
+
 
 
 DELIMITER //
@@ -519,3 +432,7 @@ insert into APPLIQUER(id_promotion, ISBN) values (2,"000649689X");
 update PROMOTIONS
 set remise = 50 where id_promotion = 2;*/
 select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by annee desc ;
+
+SELECT * FROM evaluer;
+SELECT * from associer JOIN (SELECT * FROM evaluer WHERE id_client= '5f129c57-bc74-11ec-9233-0492266e77ce' and ISBN='000100039X') as tb on associer.id_client = tb.id_client;
+SELECT * from associer natural join evaluer WHERE id_client != 'c7e869de-bcff-11ec-b89e-0492266e77ce';
