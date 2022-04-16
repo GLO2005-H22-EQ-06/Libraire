@@ -39,9 +39,10 @@
                         <span class="card-title" id="title">{{item[2]}}</span>
                     </h5>
                     <div>
-                        <i class="fa-solid fa-circle-dollar"></i> {% if item[10] %}
+                        <i class="fa-solid fa-circle-dollar"></i> {% if item[10] != item[9] %}
                         <del class="pageNbr"> : {{ item[9] | int }} $</del>
-                        <span class="prix-remise">{{item[10] | int }} $</span> {% endif %}
+                        <span class="prix-remise">{{item[10] | int }} $</span> {% else %}
+                        <span class="pageNbr"> : {{ item[9] | int }} $</span> {% endif %}
 
 
                     </div>
@@ -135,6 +136,10 @@
             color: white;
             font-size: large;
             border-radius: 10%;
+        }
+        
+        del {
+            text-decoration: line-through;
         }
     </style>
 
