@@ -28,13 +28,15 @@ def render_articles(page):
     page_end = min(page_start + page_limit, total_page)
 
     cur.execute(
-        "select * from livres order by ISBN limit %s offset %s", (limit, offset))
+        "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by ISBN limit %s offset %s", (limit, offset))
+
     items = cur.fetchall()
     loggedIn = 'username' in session
-    return render_template("articles.html", items=items, loggedin=loggedIn, total_page=total_page, page_start=page_start, page_end =page_end, next=next, prev=prev, searchInput="Search by title", current_page=page)
+    return render_template("articles.html", items=items, loggedin=loggedIn, total_page=total_page, page_start=page_start, page_end=page_end, next=next, prev=prev, searchInput="Search by title", current_page=page)
+
 
 @articles.route('/articles/details/isbn=<string:isbn>')
-def viewBook(isbn) :
+def viewBook(isbn):
     cur = mysql.connection.cursor()
     cur.execute('select * from livres where isbn = %s', [isbn])
     livre = cur.fetchone()
@@ -42,55 +44,58 @@ def viewBook(isbn) :
     username = session['username']
 
     cur.execute(
-    'SELECT id_client FROM associer WHERE identifiant = %s', [username])
+        'SELECT id_client FROM associer WHERE identifiant = %s', [username])
     userId = cur.fetchone()
 
     cur.execute(
         'SELECT * from associer JOIN (SELECT * FROM evaluer WHERE id_client=%s and ISBN=%s) as tb on associer.id_client = tb.id_client', [userId, isbn])
-    current_user_evaluated_books= cur.fetchone()
+    current_user_evaluated_books = cur.fetchone()
     if current_user_evaluated_books:
         current_user_rating = current_user_evaluated_books[4]
     else:
         current_user_rating = 0
-    
+
     cur.execute(
         'SELECT * from associer natural join evaluer WHERE id_client !=%s and isbn=%s', [userId, isbn])
-    all_other_evaluations= cur.fetchall()
-    ratings =[]
+    all_other_evaluations = cur.fetchall()
+    ratings = []
     for evaluation in all_other_evaluations:
         ratings.append(evaluation[3])
     ratings_len = len(ratings)
 
     loggedIn = 'username' in session
-    return render_template('livre.html', livre=livre, 
-            all_other_evaluations=all_other_evaluations, current_user_evaluated_books=current_user_evaluated_books, 
-            current_user_rating=current_user_rating, ratings=ratings, ratings_len=ratings_len, loggedin=loggedIn)
+    return render_template('livre.html', livre=livre,
+                           all_other_evaluations=all_other_evaluations, current_user_evaluated_books=current_user_evaluated_books,
+                           current_user_rating=current_user_rating, ratings=ratings, ratings_len=ratings_len, loggedin=loggedIn)
 
 
 @articles.route('/articles/filters/byTitle/<int:page>', methods=['GET'])
-def searchByTitle(page) :
+def searchByTitle(page):
     limit = 20
     page_limit = 10
     offset = page*limit - limit
 
     searchEntered = request.args.get('search')
     cur = mysql.connection.cursor()
-    cur.execute('select * from livres where titre like  %s', ['%' + searchEntered + '%'])
+    cur.execute('select * from livres where titre like  %s',
+                ['%' + searchEntered + '%'])
     items = cur.fetchall()
     total_row = cur.rowcount
-    total_page = ceil(total_row / limit)  
+    total_page = ceil(total_row / limit)
 
-    next = page + 1 
+    next = page + 1
     prev = page - 1
     page_start = page
     page_end = min(page_start + page_limit, total_page)
 
-    cur.execute('select * from livres where titre like %s limit %s offset %s', ('%' + searchEntered + '%', limit, offset))
+    cur.execute('select * from livres where titre like %s limit %s offset %s',
+                ('%' + searchEntered + '%', limit, offset))
     items = cur.fetchall()
 
     loggedIn = 'username' in session
-    return render_template("articles.html", items=items, loggedin=loggedIn, page_start=page_start, page_end=page_end, 
-                                        total_page=total_page, next=next, prev=prev, searchInput=searchEntered, current_page=page)
+    return render_template("articles.html", items=items, loggedin=loggedIn, page_start=page_start, page_end=page_end,
+                           total_page=total_page, next=next, prev=prev, searchInput=searchEntered, current_page=page)
+
 
 @articles.route('/articles/filters')
 def filter():

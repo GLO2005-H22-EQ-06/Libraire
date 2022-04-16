@@ -3,7 +3,7 @@
     <div class="flex-between" style="margin-bottom: 16px">
         <h2>Items available</h2>
         <form class="d-flex" action="{{ url_for('articles.searchByTitle', page=1) }}" method="GET" name="searchTitle">
-            <input class="form-control" type="search" placeholder="{{searchInput}}" name="search"/>
+            <input class="form-control" type="search" placeholder="{{searchInput}}" name="search" />
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
 
@@ -27,7 +27,7 @@
         <div class="container items" id="scroller">
             {% for item in items %}
             <div class="card" style="margin: 5% 0">
-                <form name= "BookDetail" id="bookDetailForm" action="{{ url_for('articles.viewBook', isbn=item[0]) }}" method="get">
+                <form name="BookDetail" id="bookDetailForm" action="{{ url_for('articles.viewBook', isbn=item[0]) }}" method="get">
                     <h5 class="card--header" id="title">{{item[1]}}</h5>
                     <input class="view-details" type="submit" value="view details" />
                     <a href="{{ url_for('articles.viewBook', isbn=item[0]) }}">
@@ -39,8 +39,11 @@
                         <span class="card-title" id="title">{{item[2]}}</span>
                     </h5>
                     <div>
-                        <i class="fa-solid fa-circle-dollar"></i>
-                        <span class="pageNbr"> : {{ item[9] | int }} $</span>
+                        <i class="fa-solid fa-circle-dollar"></i> {% if item[10] %}
+                        <del class="pageNbr"> : {{ item[9] | int }} $</del>
+                        <span class="prix-remise">{{item[10] | int }} $</span> {% endif %}
+
+
                     </div>
                     <p class="card-text" id="description">{{item[6]}}</p>
                     <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
@@ -62,8 +65,7 @@
                 </a>
                 {% endif %}
             </li>
-            {% for page in range(page_start, page_end) %}
-            {% if page == current_page %}
+            {% for page in range(page_start, page_end) %} {% if page == current_page %}
             <li class="page-item">
                 <a class="page-link current " style="background-color: #0a58ca; color: white;" href="{{url_for('articles.render_articles', page=page)}}">{{page}}</a>
             </li>
@@ -71,8 +73,7 @@
             <li class="page-item">
                 <a class="page-link" href="{{url_for('articles.render_articles', page=page)}}">{{page}}</a>
             </li>
-            {% endif %}
-            {% endfor %}
+            {% endif %} {% endfor %}
 
             <li class="page-item">
                 {% if total_page >= next %}
@@ -90,39 +91,51 @@
             display: flex;
             height: 35px;
         }
+        
         #bookDetailForm {
             display: flex;
             justify-content: center;
             height: 40px;
             background-color: #0d6efd;
-            border-bottom: 1px solid rgba(0,0,0,.125);
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
         }
+        
         .card--header {
             padding: 0.5rem 1rem;
             margin-bottom: 0;
         }
+        
         .btn {
             font-size: 13px;
             margin-top: 5px;
         }
+        
         .view-details {
             color: black;
             background-color: transparent;
             border: none;
             margin-top: 10px;
         }
+        
         .view-details:hover {
-        color: white;
+            color: white;
         }
+        
         .fa-arrow-right {
             margin-top: 18px;
             color: black;
         }
+        
         .fa-arrow-right:hover {
             color: white;
         }
         
-
+        .prix-remise {
+            background-color: rgb(216, 40, 40, 0.8);
+            color: white;
+            font-size: large;
+            border-radius: 10%;
+        }
     </style>
 
-{% endblock %}
+    {% endblock %}
