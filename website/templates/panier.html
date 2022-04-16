@@ -16,11 +16,10 @@
         <div class="product-price">{{article[9] * article[11] }} $</div>
         <div class="product-quantity">
             <form class="quantity_removal" id="OK" action="{{ url_for('panier.update_quantity', isbn=article[0]) }}" method="post">
-                <input name="quantity" type="number" value="{{ article[11] }}" min="1" />
-                <input class="btn btn-danger" type="submit" value="Save" />
+                <input #id="quant_input" name="quantity" type="number" value="{{ article[11] }}" min="1" />
+                <input class="btn btn-outline-primary" type="submit" value="Save" />
             </form>
         </div>
-
         <form class="product-removal" id="remove" action="{{ url_for('panier.removeProductFromCart', isbn=article[0]) }}" method="post">
             <input class="btn btn-danger" type="submit" value="Remove" />
         </form>
@@ -28,22 +27,23 @@
     {% endfor %}
     <div class="totals">
         <div class="totals-items">
-            <label>Subtotal</label>
-            <div class="totals-value" id="cart-subtotal"></div>
+            <label>Subtotal : </label>
+            <div class="totals-value" id="cart-subtotal"> {{ total }} $</div>
         </div>
         <div class="totals-items">
-            <label>Tax (15%)</label>
-            <div class="totals-value" id="cart-tax"></div>
+            <label>Tax (15%) : </label>
+            <div class="totals-value" id="cart-tax">{{ tax }} $</div>
         </div>
         <div class="totals-items">
-            <label>shipping</label>
-            <div class="totals-value" id="cart-shipping"></div>
+            <label>Shipping : </label>
+            <div class="totals-value" id="cart-shipping">{{ 15 }} $</div>
         </div>
         <div class="totals-items totals-items-total">
-            <label>Grand Total</label>
-            <div class="totals-value" id="cart-subtotal"></div>
+            <label>Grand Total : </label>
+            <div class="totals-value" id="cart-subtotal">{{ grandTotal}} $ </div>
         </div>
     </div>
+    <hr>
     <form action="{{ url_for('panier.render_checkout') }}" method="POST">
         <input class="btn btn-success" id="checkout-button" value="Checkout" type="submit" />
     </form>
@@ -55,6 +55,11 @@
 <script></script>
 
 <style lang="css">
+    .totals-items {
+        display: flex;
+        
+    }
+
     .product-image {
         float: left;
         width: 20%;
@@ -73,11 +78,6 @@
     .product-quantity {
         float: left;
         width: 10%;
-    }
-    
-    .product-removal {
-        float: left;
-        width: 9%;
     }
     
     .product-line-price {
@@ -181,6 +181,13 @@
     .product-removal {
         width: auto;
         margin-left: 150px;
+    }
+    .quantity_removal {
+        display: flex;
+        
+    }
+    input {
+        width: 100px;
     }
 </style>
 {% endblock %}

@@ -1,3 +1,4 @@
+from math import prod
 from flask import Blueprint, render_template, request, Response, session, flash, redirect, url_for
 
 from website.home import render
@@ -22,7 +23,14 @@ def render_panier():
                 [userid])
             all_cart_products = cur.fetchall()
 
-            return render_template("panier.html", loggedin=True, username=username, panier=all_cart_products)
+            total = 0
+            for product in all_cart_products:
+                total += product[9] * product[11] 
+            
+            tax = round(total * 0.15, 2)
+            grandTotal = round(total + tax + 15, 2)
+
+            return render_template("panier.html", loggedin=True, username=username, panier=all_cart_products, total=total, tax=tax, grandTotal=grandTotal)
 
         flash('You have to connect or to create an account for acceding cart',
               category='error')

@@ -24,5 +24,5 @@ def evaluateBook(isbn):
             flash('Evaluation successfully submitted !', category='success')
             return redirect(url_for('articles.viewBook', isbn=isbn))
         else:
-            flash("La note doit être un entier comprise entre 0 et 5", category='error')
+            flash("La note doit être un entier compris entre 0 et 5", category='error')
             redirect(url_for('evaluer.evaluateBook', isbn=isbn))

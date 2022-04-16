@@ -1,6 +1,9 @@
 drop database if exists projet_glo_2005;
 create database projet_glo_2005;
 use projet_glo_2005;
+
+select * from livres;
+
 create table if not exists CLIENTS
 (
     id_client varchar(36) not null,
