@@ -58,10 +58,10 @@ def register():
             id = uuid.uuid1()
             cursor.execute('INSERT INTO compte VALUES (% s, % s)',
                            (username, password))
-            mysql.connection.commit()
+            # mysql.connection.commit()
             cursor.execute('INSERT INTO clients VALUES (% s, % s, % s, % s, % s, % s)', (id, name, second_name,
                                                                                          email, address, phone))
-            mysql.connection.commit()
+            # mysql.connection.commit()
             cursor.execute(
                 'INSERT INTO associer VALUES (% s, % s)', (username, id))
             mysql.connection.commit()

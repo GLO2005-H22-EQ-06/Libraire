@@ -423,3 +423,6 @@ order by
   ISBN
 limit
   10 offset 20;
+
+
+select *, get_prix_remise(ISBN) from livres natural join (select * from panier) as all_prod;
