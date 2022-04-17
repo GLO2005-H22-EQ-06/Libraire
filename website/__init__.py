@@ -2,14 +2,15 @@ from flask import Flask, session
 from flask_mysqldb import MySQL
 
 mysql = MySQL()
-
+salt = b'$2b$12$R2Yw1fjNG8loy69c8PrWWO'
 
 def createApp():
     app = Flask(__name__)
     app.secret_key = "web app"
     app.config["MYSQL_USER"] = "root"
-    app.config["MYSQL_PASSWORD"] = "root"
+    app.config["MYSQL_PASSWORD"] = "EnvyUS123"
     app.config["MYSQL_DB"] = "projet_glo_2005"
+    
 
     mysql.__init__(app)
 
