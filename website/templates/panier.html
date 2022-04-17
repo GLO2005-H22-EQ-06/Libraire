@@ -3,8 +3,7 @@
 
 <div class="shopping-cart" id="shopping-cart">
     <h1 class="heading">My Cart</h1>
-    {% if panier| length %}
-    {% for article in panier%}
+    {% if panier| length %} {% for article in panier%}
     <div class="product" id="cart-items">
         <div class="product-image">
             <i class="fa-solid fa-book"></i>
@@ -13,7 +12,14 @@
             <div class="card-title" id="title">{{article[1]}}</div>
             <div class="card-text" id="description">{{article[2]}}</div>
         </div>
+        {% if article[9] == article[12] %}
         <div class="product-price">{{article[9] * article[11] }} $</div>
+        {% else %}
+        <del class="product-price">{{article[9] * article[11] }} $</del>
+        <div class="product-price" id="remise">
+            {{(article[12] * article[11]) | int}} $
+        </div>
+        {% endif %}
         <div class="product-quantity">
             <form class="quantity_removal" id="OK" action="{{ url_for('panier.update_quantity', isbn=article[0]) }}" method="post">
                 <input #id="quant_input" name="quantity" type="number" value="{{ article[11] }}" min="1" />
@@ -28,7 +34,7 @@
     <div class="totals">
         <div class="totals-items">
             <label>Subtotal : </label>
-            <div class="totals-value" id="cart-subtotal"> {{ total }} $</div>
+            <div class="totals-value" id="cart-subtotal">{{ total }} $</div>
         </div>
         <div class="totals-items">
             <label>Tax (15%) : </label>
@@ -40,10 +46,10 @@
         </div>
         <div class="totals-items totals-items-total">
             <label>Grand Total : </label>
-            <div class="totals-value" id="cart-subtotal">{{ grandTotal}} $ </div>
+            <div class="totals-value" id="cart-subtotal">{{ grandTotal}} $</div>
         </div>
     </div>
-    <hr>
+    <hr />
     <form action="{{ url_for('panier.render_checkout') }}" method="POST">
         <input class="btn btn-success" id="checkout-button" value="Checkout" type="submit" />
     </form>
@@ -57,9 +63,8 @@
 <style lang="css">
     .totals-items {
         display: flex;
-        
     }
-
+    
     .product-image {
         float: left;
         width: 20%;
@@ -182,12 +187,19 @@
         width: auto;
         margin-left: 150px;
     }
+    
     .quantity_removal {
         display: flex;
-        
     }
+    
     input {
         width: 100px;
+    }
+    
+    #remise-tr {
+        background-color: rgb(216, 40, 40, 0.8);
+        color: white;
+        border-radius: 10%;
     }
 </style>
 {% endblock %}
