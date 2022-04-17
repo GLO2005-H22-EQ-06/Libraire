@@ -65,10 +65,12 @@ def register():
                 found = True
                 break
 
-        if found:
-            msg = "Phone number already used"
-        elif username_fetch is not None:
+        if username_fetch is not None:
             msg = "email or username already used"
+        elif not re.match(r'^[0-9]{10}$', phone):
+            msg = "Invalid phone format.Should be 10 digits"
+        elif found:
+            msg = "Phone number already used"
         elif password != confirm_password:
             msg = "Password have to match"
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):

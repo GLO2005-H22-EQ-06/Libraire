@@ -110,41 +110,41 @@ def searchByTitle(page):
 def filter():
     if request.method == 'GET':
         filtre = request.args.get('filter')
-        flash(str(filtre))
         cur = mysql.connection.cursor()
 
         if filtre == 'None':
-            return redirect(url_for('articles.render_articleslimit 50 '))
+            return redirect(url_for('articles.render_articles'))
 
         if filtre == 'Price asc':
-            cur.execute('select * from livres order by prix asc limit 50 ')
+            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix asc limit 50")
             items = cur.fetchall()
-            return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
+            return render_template('articles.html', items=items, page_start=0, page_end=0, total_page=0, next=0,
+                                   prev=0, current_page=0, searchInput="Search by title")
 
         if filtre == 'Price dsc':
-            cur.execute('select * from livres order by prix desc limit 50')
+            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix desc limit 50")
             items = cur.fetchall()
             return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
 
         if filtre == 'Rating asc':
-            cur.execute('select * from livres order by note asc limit 50 ')
+            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note asc limit 50")
             items = cur.fetchall()
             return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
 
         if filtre == 'Rating dsc':
-            cur.execute('select * from livres order by note desc limit 50')
+            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note desc limit 50")
             items = cur.fetchall()
             return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
 
         if filtre == 'Nombre de page asc':
             cur.execute(
-                'select * from livres order by nbrepages asc limit 50')
+                "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages asc limit 50")
             items = cur.fetchall()
             return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
 
-        if filtre == 'Nombre de page asc':
+        if filtre == 'Nombre de page desc':
             cur.execute(
-                'select * from livres order by nbrepages desc limit 50')
+                "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages desc limit 50")
             items = cur.fetchall()
             return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
 

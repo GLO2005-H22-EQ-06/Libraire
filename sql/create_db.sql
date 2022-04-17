@@ -1,5 +1,4 @@
 
-use projet_glo_2005;
 create table if not exists CLIENTS
 (
     id_client varchar(36) not null,
@@ -7,7 +6,7 @@ create table if not exists CLIENTS
     prenom    varchar(50),
     email     varchar(50) unique,
     adresse   varchar(200),
-    telephone char(11) unique,
+    telephone char(10) unique,
     unique (nom, prenom),
     primary key (id_client)
 );
