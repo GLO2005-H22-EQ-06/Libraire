@@ -80,11 +80,16 @@
                 <i class="fa-solid fa-calendar-days"></i>
                 <h6 class="pageNbr">Year : {{ livre[7]}}</h6>
               </div>
-              <div class="infos">
-                <h6 class="pageNbr">Note: {{ livre[8] | int }}</h6>
-                {%for i in range(3)%}
-                <i class="fa-solid fa-star"></i>
-                {% endfor %}
+              <div class="infos" style="margin-bottom: 10px">
+                  <i class="fa-solid fa-star" style="margin-top: 12px"></i>
+                <h6 style="margin-top: 10px">Note : </h6>
+                {% if mean_rating == 0 %}
+                    <span style="margin-top: 10px">No one rated this book</span>
+                {% else %}
+                    {%for i in range(mean_rating)%}
+                        <span style="font-size: 150%; color: gold">&starf;</span>
+                    {% endfor %}
+                {% endif %}
               </div>
               <p class="card-text" id="description">{{livre[6]}}</p>
               <div class="infos">
