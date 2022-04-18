@@ -19,14 +19,15 @@ def render_panier():
             userid = cur.fetchone()
 
             cur.execute(
-                'select * from livres natural join (select * from panier where PANIER.id_client = %s) as all_prod;',
+                'select *, get_prix_remise(ISBN) from livres natural join (select * from panier where PANIER.id_client = %s) as all_prod;',
                 [userid])
+
             all_cart_products = cur.fetchall()
 
             total = 0
             for product in all_cart_products:
-                total += product[9] * product[11] 
-            
+                total += product[12] * product[11]
+
             tax = round(total * 0.15, 2)
             grandTotal = round(total + tax + 15, 2)
 
