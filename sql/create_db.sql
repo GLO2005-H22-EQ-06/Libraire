@@ -1,4 +1,23 @@
-SELECT 'mysql' dbms,t.TABLE_SCHEMA,t.TABLE_NAME,c.COLUMN_NAME,c.ORDINAL_POSITION,c.DATA_TYPE,c.CHARACTER_MAXIMUM_LENGTH,n.CONSTRAINT_TYPE,k.REFERENCED_TABLE_SCHEMA,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.TABLES t LEFT JOIN INFORMATION_SCHEMA.COLUMNS c ON t.TABLE_SCHEMA=c.TABLE_SCHEMA AND t.TABLE_NAME=c.TABLE_NAME LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE k ON c.TABLE_SCHEMA=k.TABLE_SCHEMA AND c.TABLE_NAME=k.TABLE_NAME AND c.COLUMN_NAME=k.COLUMN_NAME LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS n ON k.CONSTRAINT_SCHEMA=n.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME=n.CONSTRAINT_NAME AND k.TABLE_SCHEMA=n.TABLE_SCHEMA AND k.TABLE_NAME=n.TABLE_NAME WHERE t.TABLE_TYPE='BASE TABLE' AND t.TABLE_SCHEMA NOT IN('INFORMATION_SCHEMA','mysql','performance_schema');
+SELECT 'mysql' dbms,
+       t.TABLE_SCHEMA,
+       t.TABLE_NAME,
+       c.COLUMN_NAME,
+       c.ORDINAL_POSITION,
+       c.DATA_TYPE,
+       c.CHARACTER_MAXIMUM_LENGTH,
+       n.CONSTRAINT_TYPE,
+       k.REFERENCED_TABLE_SCHEMA,
+       k.REFERENCED_TABLE_NAME,
+       k.REFERENCED_COLUMN_NAME
+FROM INFORMATION_SCHEMA.TABLES t
+         LEFT JOIN INFORMATION_SCHEMA.COLUMNS c ON t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME
+         LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+                   ON c.TABLE_SCHEMA = k.TABLE_SCHEMA AND c.TABLE_NAME = k.TABLE_NAME AND c.COLUMN_NAME = k.COLUMN_NAME
+         LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS n
+                   ON k.CONSTRAINT_SCHEMA = n.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME = n.CONSTRAINT_NAME AND
+                      k.TABLE_SCHEMA = n.TABLE_SCHEMA AND k.TABLE_NAME = n.TABLE_NAME
+WHERE t.TABLE_TYPE = 'BASE TABLE'
+  AND t.TABLE_SCHEMA NOT IN ('INFORMATION_SCHEMA', 'mysql', 'performance_schema');
 drop database if exists projet_glo_2005;
 create database projet_glo_2005;
 use projet_glo_2005;
@@ -20,7 +39,7 @@ create table if not exists Commandes
     date       datetime not null,
     prixTotal  double   not null,
     primary key (id_facture),
-    FOREIGN KEY (id_client) references CLIENTS(id_client) on update cascade on delete no action
+    FOREIGN KEY (id_client) references CLIENTS (id_client) on update cascade on delete no action
 );
 
 create table LIVRES
@@ -45,12 +64,12 @@ CREATE TABLE STOCK
     ISBN     char(10) unique,
     quantity int,
     primary key (isbn),
-    FOREIGN KEY (ISBN) references LIVRES(ISBN) on delete cascade on update cascade
+    FOREIGN KEY (ISBN) references LIVRES (ISBN) on delete cascade on update cascade
 );
 CREATE TABLE IF NOT EXISTS COMPTE
 (
     identifiant varchar(20) unique,
-    motDePasse  varchar(50),
+    motDePasse  varchar(250),
     primary key (identifiant)
 );
 create table if not exists ASSOCIER
@@ -403,6 +422,8 @@ begin
     into prix_t
     from PANIER P
     where P.id_client = p_idClient;
+    insert into Commandes
+    values (p_idClient, new_id, date_facture, prix_t);
     open curseur;
     lecteur:
     loop
@@ -414,23 +435,14 @@ begin
         insert into facturer
         values (p_idClient, p_isbn, new_id, p_quantity);
     end loop lecteur;
-    insert into Commandes
-    values (p_idClient, new_id, date_facture, prix_t);
-    close curseur;
-end / / delimiter ;
-delimiter / /
-create trigger delete_books
-    after
-        insert
-    on Commandes
-    for each row
-begin
     delete
     from panier P
-    where P.id_client = NEW.id_client;
-end / /
-delimiter ;
-/*insert into PROMOTIONS(remise, date_debut, date_fin)
+    where P.id_client = p_idClient;
+    close curseur;
+end / / delimiter ;
+
+
+/* insert into PROMOTIONS(remise, date_debut, date_fin)
 values (floor(rand() * 90) + 1, current_timestamp(), adddate(current_timestamp, 50));
 
 insert into APPLIQUER(id_promotion, ISBN)
