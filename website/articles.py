@@ -31,8 +31,17 @@ def render_articles(page):
         "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by ISBN limit %s offset %s", (limit, offset))
 
     items = cur.fetchall()
+    ratings = []
+    for i in items:
+        if i[8] is not None:
+            ratings.append(int(i[8]))
+        else:
+            ratings.append(0)
+
     loggedIn = 'username' in session
-    return render_template("articles.html", items=items, loggedin=loggedIn, total_page=total_page, page_start=page_start, page_end=page_end, next=next, prev=prev, searchInput="Search by title", current_page=page)
+    return render_template("articles.html", items=items, loggedin=loggedIn, total_page=total_page,
+                           page_start=page_start, page_end=page_end, next=next, prev=prev,
+                           searchInput="Search by title", current_page=page, all=True, title=False, ratings=ratings)
 
 
 @articles.route('/articles/details/isbn=<string:isbn>')
@@ -40,6 +49,11 @@ def viewBook(isbn):
     cur = mysql.connection.cursor()
     cur.execute('select * from livres where isbn = %s', [isbn])
     livre = cur.fetchone()
+    if livre[8] is not None:
+        mean_rating = int(livre[8])
+    else:
+        mean_rating= 0
+
     if 'username' in session:
         username = session['username']
 
@@ -65,7 +79,7 @@ def viewBook(isbn):
 
         return render_template('livre.html', livre=livre,
                                all_other_evaluations=all_other_evaluations, current_user_evaluated_books=current_user_evaluated_books,
-                               current_user_rating=current_user_rating, ratings=ratings, ratings_len=ratings_len, loggedin=True)
+                               current_user_rating=current_user_rating, ratings=ratings, ratings_len=ratings_len, loggedin=True, mean_rating=mean_rating)
     else:
         cur.execute(
             'SELECT * from associer natural join evaluer WHERE isbn=%s', [isbn])
@@ -76,76 +90,107 @@ def viewBook(isbn):
         ratings_len = len(ratings)
 
         return render_template('livre.html', livre=livre,
-                               all_other_evaluations=all_evaluations, ratings=ratings, ratings_len=ratings_len, loggedin=False)
+                               all_other_evaluations=all_evaluations, ratings=ratings, ratings_len=ratings_len, loggedin=False, mean_rating=mean_rating)
 
-@articles.route('/articles/filters/byTitle/<int:page>', methods=['GET'])
-def searchByTitle(page):
-    limit = 10
-    page_limit = 10
-    offset = page*limit - limit
-
+@articles.route('/articles/filters/byTitle/', methods=['GET'])
+def searchByTitle():
     searchEntered = request.args.get('search')
     cur = mysql.connection.cursor()
-    cur.execute('select * from livres where titre like  %s',
+
+    cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L where titre like %s order by ISBN limit 50",
                 ['%' + searchEntered + '%'])
     items = cur.fetchall()
-    total_row = cur.rowcount
-    total_page = ceil(total_row / limit)
 
-    next = page + 1
-    prev = page - 1
-    page_start = page
-    page_end = min(page_start + page_limit, total_page)
-
-    cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L where titre like %s order by ISBN limit %s offset %s",
-                ('%' + searchEntered + '%', limit, offset))
-    items = cur.fetchall()
+    ratings = []
+    for i in items:
+        if i[8] is not None:
+            ratings.append(int(i[8]))
+        else:
+            ratings.append(0)
 
     loggedIn = 'username' in session
-    return render_template("articles.html", items=items, loggedin=loggedIn, page_start=page_start, page_end=page_end,
-                           total_page=total_page, next=next, prev=prev, searchInput=searchEntered, current_page=page)
+    return render_template("articles.html", items=items, loggedin=loggedIn, all=False, searchInput=searchEntered, ratings=ratings)
 
 
-@articles.route('/articles/filters')
+@articles.route('/articles/filters/', methods=['GET'])
 def filter():
-    if request.method == 'GET':
-        filtre = request.args.get('filter')
-        cur = mysql.connection.cursor()
+    filtre = request.args.get('filter')
+    cur = mysql.connection.cursor()
 
-        if filtre == 'None':
-            return redirect(url_for('articles.render_articles'))
+    loggedIn = 'username' in session
 
-        if filtre == 'Price asc':
-            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix asc limit 50")
-            items = cur.fetchall()
-            return render_template('articles.html', items=items, page_start=0, page_end=0, total_page=0, next=0,
-                                   prev=0, current_page=0, searchInput="Search by title")
+    if filtre == 'None':
+        return redirect(url_for('articles.render_articles'))
 
-        if filtre == 'Price dsc':
-            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix desc limit 50")
-            items = cur.fetchall()
-            return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
+    if filtre == 'Price asc':
+        cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix asc limit 50")
+        items = cur.fetchall()
+        ratings = []
+        for i in items:
+            if i[8] is not None:
+                ratings.append(int(i[8]))
+            else:
+                ratings.append(0)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
 
-        if filtre == 'Rating asc':
-            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note asc limit 50")
-            items = cur.fetchall()
-            return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
+    if filtre == 'Price desc':
+        cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix desc limit 50")
+        items = cur.fetchall()
 
-        if filtre == 'Rating dsc':
-            cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note desc limit 50")
-            items = cur.fetchall()
-            return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
+        ratings = []
+        for i in items:
+            if i[8] is not None:
+                ratings.append(int(i[8]))
+            else:
+                ratings.append(0)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
 
-        if filtre == 'Nombre de page asc':
-            cur.execute(
-                "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages asc limit 50")
-            items = cur.fetchall()
-            return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
+    if filtre == 'Rating asc':
+        cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note asc limit 50")
 
-        if filtre == 'Nombre de page desc':
-            cur.execute(
-                "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages desc limit 50")
-            items = cur.fetchall()
-            return render_template('articles.html', items=items, page=1, next=0, prev=2, searchInput="Search by title")
+        items = cur.fetchall()
+        ratings = []
+        for i in items:
+            if i[8] is not None:
+                ratings.append(int(i[8]))
+            else:
+                ratings.append(0)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
 
-    return redirect(url_for('articles.render_articles'))
+    if filtre == 'Rating desc':
+        cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note desc limit 50")
+
+        items = cur.fetchall()
+        ratings = []
+        for i in items:
+            if i[8] is not None:
+                ratings.append(int(i[8]))
+            else:
+                ratings.append(0)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+
+    if filtre == 'Nombre de page asc':
+        cur.execute(
+            "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages asc limit 50")
+        items = cur.fetchall()
+
+        ratings = []
+        for i in items:
+            if i[8] is not None:
+                ratings.append(int(i[8]))
+            else:
+                ratings.append(0)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+
+    if filtre == 'Nombre de page desc':
+        cur.execute(
+            "select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages desc limit 50")
+        items = cur.fetchall()
+
+        ratings = []
+        for i in items:
+            if i[8] is not None:
+                ratings.append(int(i[8]))
+            else:
+                ratings.append(0)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)

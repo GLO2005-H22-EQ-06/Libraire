@@ -1,4 +1,4 @@
-
+select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages desc limit 50;
 create table if not exists CLIENTS
 (
     id_client varchar(36) not null,
