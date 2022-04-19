@@ -6,7 +6,7 @@ from . import mysql
 user = Blueprint('user', __name__)
 
 
-@user.route('/profil')
+@user.route('/profile')
 def getUserInfo():
     if not 'username' in session:
         flash('You have to be connected for acceding')
