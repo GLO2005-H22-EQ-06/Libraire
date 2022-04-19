@@ -41,7 +41,7 @@ def render_articles(page):
     loggedIn = 'username' in session
     return render_template("articles.html", items=items, loggedin=loggedIn, total_page=total_page,
                            page_start=page_start, page_end=page_end, next=next, prev=prev,
-                           searchInput="Search by title", current_page=page, all=True, title=False, ratings=ratings)
+                           searchInput="Search for a title or ISBN ", current_page=page, all=True, ratings=ratings)
 
 
 @articles.route('/articles/details/isbn=<string:isbn>')
@@ -93,12 +93,12 @@ def viewBook(isbn):
                                all_other_evaluations=all_evaluations, ratings=ratings, ratings_len=ratings_len, loggedin=False, mean_rating=mean_rating)
 
 @articles.route('/articles/filters/byTitle/', methods=['GET'])
-def searchByTitle():
+def searchByTitleOrIsbn():
     searchEntered = request.args.get('search')
     cur = mysql.connection.cursor()
 
-    cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L where titre like %s order by ISBN limit 50",
-                ['%' + searchEntered + '%'])
+    cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L where titre like %s or ISBN = %s order by ISBN limit 50",
+                (('%' + searchEntered + '%'), searchEntered))
     items = cur.fetchall()
 
     ratings = []
@@ -131,7 +131,7 @@ def filter():
                 ratings.append(int(i[8]))
             else:
                 ratings.append(0)
-        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Search for a title or ISBN", ratings=ratings)
 
     if filtre == 'Price desc':
         cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by prix desc limit 50")
@@ -143,7 +143,7 @@ def filter():
                 ratings.append(int(i[8]))
             else:
                 ratings.append(0)
-        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Search for a title or ISBN", ratings=ratings)
 
     if filtre == 'Rating asc':
         cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note asc limit 50")
@@ -155,7 +155,7 @@ def filter():
                 ratings.append(int(i[8]))
             else:
                 ratings.append(0)
-        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Search for a title or ISBN", ratings=ratings)
 
     if filtre == 'Rating desc':
         cur.execute("select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by note desc limit 50")
@@ -167,7 +167,7 @@ def filter():
                 ratings.append(int(i[8]))
             else:
                 ratings.append(0)
-        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Search for a title or ISBN", ratings=ratings)
 
     if filtre == 'Nombre de page asc':
         cur.execute(
@@ -180,7 +180,7 @@ def filter():
                 ratings.append(int(i[8]))
             else:
                 ratings.append(0)
-        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Search for a title or ISBN", ratings=ratings)
 
     if filtre == 'Nombre de page desc':
         cur.execute(
@@ -193,4 +193,4 @@ def filter():
                 ratings.append(int(i[8]))
             else:
                 ratings.append(0)
-        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Searche by title", ratings=ratings)
+        return render_template('articles.html',loggedin=loggedIn, items=items, title=False, all=False, searchInput="Search for a title or ISBN", ratings=ratings)
