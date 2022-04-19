@@ -23,11 +23,11 @@ create database projet_glo_2005;
 use projet_glo_2005;
 create table if not exists CLIENTS
 (
-    id_client varchar(36) not null,
+    id_client char(36) not null,
     nom       varchar(50) not null,
     prenom    varchar(50),
     email     varchar(50) unique,
-    adresse   varchar(200),
+    adresse   tinytext,
     telephone char(11) unique,
     unique (nom, prenom),
     primary key (id_client)
