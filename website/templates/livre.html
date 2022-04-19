@@ -88,7 +88,10 @@
                 {% else %} {%for i in range(mean_rating)%}
                 <span style="font-size: 150%; color: gold">&starf;</span>
                 {% endfor %} {% if flMean != 0 %}
-                <span style="font-size: 150%; color: gold"> &#11241;</span>
+                <i
+                  style="margin-top: 1.4%; color: gold"
+                  class="fa-solid fa-star-sharp-half"
+                ></i>
                 {% endif %} {% endif %}
               </div>
               <p class="card-text" id="description">{{livre[6]}}</p>

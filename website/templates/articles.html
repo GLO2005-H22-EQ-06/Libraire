@@ -51,12 +51,9 @@
                     <div style="display: flex">
                         <h6 style="margin-top: 10px">Note : </h6>
                         {% if ratings[loop.index - 1] == 0 %}
-                            <span style="margin-top: 10px">No one rated this book</span>
-                        {% else %}
-                            {%for i in range(ratings[loop.index - 1])%}
-                                <span style="font-size: 150%; color: gold">&starf;</span>
-                            {% endfor %}
-                        {% endif %}
+                        <span style="margin-top: 10px">No one rated this book</span> {% else %} {%for i in range(ratings[loop.index - 1])%}
+                        <span style="font-size: 150%; color: gold">&starf;</span> {% endfor %} {% if flMean != 0 %}
+                        <i style="margin-top: 0.9%; color: gold; margin-left: 2px;" class="fa-solid fa-star-sharp-half"></i> {% endif %} {% endif %}
                     </div>
                     <p class="card-text" id="description" style="margin-top: 10px">{{item[6]}}</p>
                     <form name="addToCartForm" action="{{ url_for('panier.addProductToCart', isbn=item[0]) }}" method="post">
@@ -69,7 +66,7 @@
             </div>
             {% endfor %}
         </div>
-    {% if all %}
+        {% if all %}
         <ul class="pagination">
             <li class="page-item">
                 {% if prev >= 1%}
@@ -98,7 +95,7 @@
                 {% endif%}
             </li>
         </ul>
-    {% endif %}
+        {% endif %}
     </div>
 
     <style>
