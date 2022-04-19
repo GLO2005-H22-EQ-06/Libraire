@@ -25,17 +25,23 @@ def generate_promotion():
 
 
 def appliquer_promotion():
-    cursor.execute('select isbn from livres limit 1000')
+    cursor.execute('select isbn from livres limit 150')
     books = cursor.fetchall()
 
     cursor.execute('select id_promotion from promotions')
     promotions = cursor.fetchall()
-
-    for isbn in books:
+    print(books)
+    liste = []
+    i = 0
+    while i < 100:
         id_promo = random.choice(promotions)
-        cursor.execute('insert into appliquer values (%s, %s, %s)',
-                       (id_promo, isbn, 0))
-        conn.commit()
+        isbn = random.choice(books)
+        if isbn not in liste:
+            liste.append(isbn)
+            i += 1
+            cursor.execute('insert into appliquer(id_promotion, ISBN) values (%s, %s)',
+                           (id_promo, isbn))
+            conn.commit()
 
 
 if __name__ == "__main__":
