@@ -81,15 +81,15 @@
                 <h6 class="pageNbr">Year : {{ livre[7]}}</h6>
               </div>
               <div class="infos" style="margin-bottom: 10px">
-                  <i class="fa-solid fa-star" style="margin-top: 12px"></i>
-                <h6 style="margin-top: 10px">Note : </h6>
+                <i class="fa-solid fa-star" style="margin-top: 12px"></i>
+                <h6 style="margin-top: 10px">Note :</h6>
                 {% if mean_rating == 0 %}
-                    <span style="margin-top: 10px">No one rated this book</span>
-                {% else %}
-                    {%for i in range(mean_rating)%}
-                        <span style="font-size: 150%; color: gold">&starf;</span>
-                    {% endfor %}
-                {% endif %}
+                <span style="margin-top: 10px">No one rated this book</span>
+                {% else %} {%for i in range(mean_rating)%}
+                <span style="font-size: 150%; color: gold">&starf;</span>
+                {% endfor %} {% if flMean != 0 %}
+                <span style="font-size: 150%; color: gold"> &#11241;</span>
+                {% endif %} {% endif %}
               </div>
               <p class="card-text" id="description">{{livre[6]}}</p>
               <div class="infos">
@@ -127,7 +127,7 @@
       </tr>
     </thead>
     <tbody>
-    {% if loggedin %}
+      {% if loggedin %}
       <tr>
         <th scope="row">{{current_user_evaluated_books[0]}}</th>
         <td>{{current_user_evaluated_books[6]}}</td>
@@ -138,8 +138,7 @@
         </td>
         <td>{{current_user_evaluated_books[5]}}</td>
       </tr>
-    {% endif %}
-      {% for evaluation in all_other_evaluations %}
+      {% endif %} {% for evaluation in all_other_evaluations %}
       <tr>
         <th scope="row">{{evaluation[1]}}</th>
         <td>{{evaluation[5]}}</td>
@@ -246,6 +245,10 @@
   .rate-area > input:checked ~ label:hover ~ label,
   .rate-area > label:hover ~ input:checked ~ label {
     color: gold;
+  }
+
+  #halfStar {
+    margin-top: 10px;
   }
 </style>
 

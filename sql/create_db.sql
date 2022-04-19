@@ -1,4 +1,6 @@
-select L.*, get_prix_remise(L.isbn) as prix_remise from LIVRES L order by nbrepages desc limit 50;
+create database if not exists projet_glo_2005;
+use projet_glo_2005;
+
 create table if not exists CLIENTS
 (
     id_client varchar(36) not null,
@@ -429,6 +431,8 @@ begin
     from panier P
     where P.id_client = NEW.id_client;
 end / / delimiter;
+
+select *, get_prix_remise(ISBN) from facturer natural join livres where id_facture = 'f10fda8a-c014-11ec-a36c-244bfe873661';
 
 
 

@@ -1,0 +1,24 @@
+{% extends 'base.html' %} {% block body %}
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <th scope="row">{{loop.index}}</th>
+                <td>{{product[4]}}</td>
+                <td>{{product[3]}}</td>
+                <td>{{(product[13] * product[3]) | int }} $</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
