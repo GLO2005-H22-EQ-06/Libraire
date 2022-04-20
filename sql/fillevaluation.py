@@ -20,7 +20,7 @@ clients = cursor.fetchall()
 cursor.execute('select isbn from livres limit 150')
 livres = cursor.fetchall()
 i = 0
-while i < 140:
+while i < 800:
     client = random.choice(clients)
     isbn = random.choice(livres)
     if (client, isbn) not in liste:
