@@ -10,6 +10,7 @@ names = ["bookID", 'title', "authors", "average_rating", "isbn", "isbn13", "lang
 df = pd.read_csv('../csv/books.csv', delimiter=',', names=names)
 host = "root"
 pwd = "EnvyUS123"
+
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
 conn.begin()

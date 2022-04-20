@@ -57,43 +57,17 @@ def viewBook(isbn):
     intMean = int(mean_rating)
     flMean = mean_rating - intMean
 
-    if 'username' in session:
-        username = session['username']
+    cur.execute(
+        'SELECT * from associer natural join evaluer WHERE isbn=%s order by date desc ', [isbn])
+    all_evaluations = cur.fetchall()
+    ratings = []
+    for evaluation in all_evaluations:
+        ratings.append(evaluation[3])
+    ratings_len = len(ratings)
+    flash(all_evaluations)
 
-        cur.execute(
-            'SELECT id_client FROM associer WHERE identifiant = %s', [username])
-        userId = cur.fetchone()
-
-        cur.execute(
-            'SELECT * from associer JOIN (SELECT * FROM evaluer WHERE id_client=%s and ISBN=%s) as tb on associer.id_client = tb.id_client', [userId, isbn])
-        current_user_evaluated_books = cur.fetchone()
-        if current_user_evaluated_books:
-            current_user_rating = current_user_evaluated_books[4]
-        else:
-            current_user_rating = 0
-
-        cur.execute(
-            'SELECT * from associer natural join evaluer WHERE id_client !=%s and isbn=%s', [userId, isbn])
-        all_other_evaluations = cur.fetchall()
-        ratings = []
-        for evaluation in all_other_evaluations:
-            ratings.append(evaluation[3])
-        ratings_len = len(ratings)
-
-        return render_template('livre.html', livre=livre,
-                               all_other_evaluations=all_other_evaluations, current_user_evaluated_books=current_user_evaluated_books,
-                               current_user_rating=current_user_rating, ratings=ratings, ratings_len=ratings_len, loggedin=True, mean_rating=intMean, flMean=flMean)
-    else:
-        cur.execute(
-            'SELECT * from associer natural join evaluer WHERE isbn=%s', [isbn])
-        all_evaluations = cur.fetchall()
-        ratings = []
-        for evaluation in all_evaluations:
-            ratings.append(evaluation[3])
-        ratings_len = len(ratings)
-
-        return render_template('livre.html', livre=livre,
-                               all_other_evaluations=all_evaluations, ratings=ratings, ratings_len=ratings_len, loggedin=False, mean_rating=intMean, flMean=flMean)
+    return render_template('livre.html', livre=livre,
+                            all_other_evaluations=all_evaluations, ratings=ratings, ratings_len=ratings_len, loggedin=False, mean_rating=intMean, flMean=flMean)
 
 
 @articles.route('/articles/filters/byTitle/', methods=['GET'])

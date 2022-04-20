@@ -83,11 +83,13 @@
               <div class="infos" style="margin-bottom: 10px">
                 <i class="fa-solid fa-star" style="margin-top: 12px"></i>
                 <h6 style="margin-top: 10px">Note :</h6>
+
                 {% if mean_rating == 0 %}
                 <span style="margin-top: 10px">No one rated this book</span>
-                {% else %} {%for i in range(mean_rating)%}
-                <span style="font-size: 150%; color: gold">&starf;</span>
-                {% endfor %} {% if flMean != 0 %}
+                {% else %}
+                    {%for i in range(mean_rating)%}
+                        <span style="font-size: 150%; color: gold">&starf;</span>
+                    {% endfor %} {% if flMean != 0 %}
                 <i
                   style="margin-top: 1.4%; color: gold"
                   class="fa-solid fa-star-sharp-half"
@@ -130,26 +132,14 @@
       </tr>
     </thead>
     <tbody>
-      {% if loggedin %}
-      <tr>
-        <th scope="row">{{current_user_evaluated_books[0]}}</th>
-        <td>{{current_user_evaluated_books[6]}}</td>
-        <td>
-          {% for i in range(current_user_rating) %}
-          <span style="font-size: 150%; color: gold">&starf;</span>
-          {% endfor %}
-        </td>
-        <td>{{current_user_evaluated_books[5]}}</td>
-      </tr>
-      {% endif %} {% for evaluation in all_other_evaluations %}
+      {% for evaluation in all_other_evaluations %}
       <tr>
         <th scope="row">{{evaluation[1]}}</th>
         <td>{{evaluation[5]}}</td>
         <td>
-          {% for number in range(ratings_len)%} {% for i in
-          range(ratings[number]) %}
-          <span style="font-size: 150%; color: gold">&starf;</span>
-          {% endfor %} {% endfor %}
+              {% for i in range(evaluation[3]) %}
+                <span style="font-size: 150%; color: gold">&starf;</span>
+              {% endfor %}
         </td>
         <td>{{evaluation[4]}}</td>
       </tr>
