@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 
 host = "root"
-pwd = "root"
+pwd = "EnvyUS123"
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
 conn.begin()

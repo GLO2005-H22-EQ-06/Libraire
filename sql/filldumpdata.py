@@ -8,7 +8,7 @@ import pymysql as sql
 import bcrypt
 
 host = "root"
-pwd = "13Loulou#"
+pwd = "EnvyUS123"
 salt = b'$2b$12$R2Yw1fjNG8loy69c8PrWWO'
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")

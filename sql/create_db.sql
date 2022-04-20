@@ -1,6 +1,4 @@
-drop database if exists projet_glo_2005;
-create database projet_glo_2005;
-use projet_glo_2005;
+
 create table if not exists CLIENTS (
   id_client char(36) not null,
   nom varchar(50) not null,
@@ -375,41 +373,3 @@ where
   P.id_client = p_idClient;
 close curseur;
 end / / delimiter;
-select
-  *,
-  get_prix_remise(ISBN)
-from
-  facturer natural
-  join livres
-where
-  id_facture = 'f10fda8a-c014-11ec-a36c-244bfe873661';
-  /* insert into PROMOTIONS(remise, date_debut, date_fin)
-      values (floor(rand() * 90) + 1, current_timestamp(), adddate(current_timestamp, 50));
-      
-      insert into APPLIQUER(id_promotion, ISBN)
-      values (2, "000649689X");
-      update PROMOTIONS
-      set remise = 50
-      where id_promotion = 2;
-      
-      select L.*,
-             get_prix_remise(L.isbn) as prix_remise
-      from LIVRES L
-      order by annee desc;
-      SELECT *
-      FROM evaluer;
-      SELECT *
-      from associer
-               JOIN (SELECT *
-                     FROM evaluer
-                     WHERE id_client = '5f129c57-bc74-11ec-9233-0492266e77ce'
-                       and ISBN = '000100039X') as tb on associer.id_client = tb.id_client;
-      SELECT *
-      from associer
-               natural join evaluer
-      WHERE id_client != 'c7e869de-bcff-11ec-b89e-0492266e77ce';
-      select L.*,
-             get_prix_remise(L.isbn) as prix_remise
-      from LIVRES L
-      order by ISBN
-      limit 10 offset 20;*/
