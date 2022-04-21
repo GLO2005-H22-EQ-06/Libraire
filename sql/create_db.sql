@@ -1,4 +1,7 @@
-SELECT * from associer natural join evaluer WHERE isbn='000100039X' order by date desc;
+
+
+use projet_glo_2005;
+
 create table if not exists CLIENTS (
   id_client char(36) not null,
   nom varchar(50) not null,

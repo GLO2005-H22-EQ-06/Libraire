@@ -64,7 +64,6 @@ def viewBook(isbn):
     for evaluation in all_evaluations:
         ratings.append(evaluation[3])
     ratings_len = len(ratings)
-    flash(all_evaluations)
 
     return render_template('livre.html', livre=livre,
                             all_other_evaluations=all_evaluations, ratings=ratings, ratings_len=ratings_len, loggedin=False, mean_rating=intMean, flMean=flMean)

@@ -7,9 +7,9 @@ import pymysql as sql
 
 names = ["bookID", 'title', "authors", "average_rating", "isbn", "isbn13", "language_code", "num_pages",
          "ratings_count", "text_reviews_count", "publication_date", "publisher"]
-df = pd.read_csv('../csv/books.csv', delimiter=',', names=names)
+df = pd.read_csv('./csv/books.csv', delimiter=',', names=names)
 host = "root"
-pwd = "EnvyUS123"
+pwd = "root"
 
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
