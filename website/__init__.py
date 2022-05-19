@@ -1,5 +1,6 @@
 from flask import Flask, session
-from flask_mysqldb import MySQL
+from flask_mysqldb import \
+    MySQL
 
 mysql = MySQL()
 salt = b'$2b$12$R2Yw1fjNG8loy69c8PrWWO'

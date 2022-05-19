@@ -373,3 +373,23 @@ where
   P.id_client = p_idClient;
 close curseur;
 end / / delimiter;
+
+
+
+use projet_glo_2005;
+
+create table test (
+                      id int,
+                      code int,
+                      name varchar(30),
+                      primary key (id, code)
+)
+
+-- one different key
+insert into test values (2, 55, "My name");
+insert into test values (2, 55, "Second name") on duplicate key update id = values (id), code = values (code);
+insert into test values (2, 32, "thrid name") on duplicate key update id = values (id), code = values (code);
+
+select * from test;
+
+drop table test;
