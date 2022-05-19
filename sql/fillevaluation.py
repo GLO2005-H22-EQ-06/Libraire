@@ -6,7 +6,7 @@ import pandas as pd
 import pymysql as sql
 
 host = "root"
-pwd = "EnvyUS123"
+pwd = "root"
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
 conn.begin()

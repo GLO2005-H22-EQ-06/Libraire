@@ -8,7 +8,7 @@ import pymysql as sql
 import bcrypt
 
 host = "root"
-pwd = "EnvyUS123"
+pwd = "root"
 salt = b'$2b$12$R2Yw1fjNG8loy69c8PrWWO'
 conn = sql.Connection(user="root", password=pwd,
                       host="localhost", database="projet_glo_2005")
@@ -20,8 +20,10 @@ def createId(prenom: str, nom: str):
     return prenom[0:2] + nom[0:2]
 
 
-prenoms = ("Noah", "Jackson", "Liam", "Lucas", "Olivier", "Leo", "Benjamin", "Theo", "Jack", "Aiden")
-noms = ("Allen", "Bell", "Brown", "Chan", "Jones", "Ross", "Scott", "Wong", "Young", "Moore")
+prenoms = ("Noah", "Jackson", "Liam", "Lucas", "Olivier",
+           "Leo", "Benjamin", "Theo", "Jack", "Aiden")
+noms = ("Allen", "Bell", "Brown", "Chan", "Jones",
+        "Ross", "Scott", "Wong", "Young", "Moore")
 phones = ("9842918448",
           "8125873787",
           "8263893759",
@@ -39,8 +41,11 @@ emails = ("dcemgrg045@gaduguda.xyz", "wmqnvoc461@gaduguda.xyz", "jusjeud668@coul
 for i in range(10):
     id_client = uuid.uuid4()
     iden = createId(prenoms[i], noms[i]).lower()
-    cursor.execute("INSERT INTO clients VALUES (%s, %s, %s, %s, %s, %s)", (id_client, noms[i], prenoms[i], emails[i], lorem.sentence(), phones[i]))
-    cursor.execute("INSERT INTO projet_glo_2005.compte values(%s, %s)", (iden, bcrypt.hashpw(lorem.sentence().encode("utf-8"), salt) ))
+    cursor.execute("INSERT INTO clients VALUES (%s, %s, %s, %s, %s, %s)",
+                   (id_client, noms[i], prenoms[i], emails[i], lorem.sentence(), phones[i]))
+    cursor.execute("INSERT INTO projet_glo_2005.compte values(%s, %s)",
+                   (iden, bcrypt.hashpw(lorem.sentence().encode("utf-8"), salt)))
     conn.commit()
-    cursor.execute("INSERT INTO projet_glo_2005.associer VALUES(%s, %s)", (iden, id_client))
+    cursor.execute(
+        "INSERT INTO projet_glo_2005.associer VALUES(%s, %s)", (iden, id_client))
     conn.commit()
